@@ -146,7 +146,8 @@ def collect_tasks(
                         exceptions.append(str(e))
                         continue
 
-                ensure_tool_is_loaded(tool.image)
+                if getattr(tool, "runner", "docker") == "docker":
+                    ensure_tool_is_loaded(tool.image)
                 task = sb.tasks.Task(absfn, relfn, rdir, solc_version, solc_path, tool, settings)
                 tasks.append(task)
 

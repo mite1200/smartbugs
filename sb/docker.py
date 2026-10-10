@@ -102,7 +102,7 @@ def __docker_args(task: "sb.tasks.Task", sbdir: str) -> dict[str, Any]:
 
 def execute(
     task: "sb.tasks.Task",
-) -> tuple[Optional[int], list[str], Optional[bytes], dict[str, Any]]:
+) -> tuple[Optional[int], list[str], Optional[bytes], list[str], dict[str, Any]]:
     sbdir = __docker_volume(task)
     args = __docker_args(task, sbdir)
     exit_code, logs, output, sb_bin_log, container = None, [], None, [], None

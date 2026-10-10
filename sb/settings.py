@@ -36,6 +36,7 @@ class Settings:
         self.json: bool = False
         self.sarif: bool = False
         self.quiet: bool = False
+        self.llm: dict[str, Any] = {}
 
     def freeze(self) -> None:
         """Freeze settings and expand all template variables.
@@ -208,6 +209,12 @@ class Settings:
                     setattr(self, k, v)
                 else:
                     raise sb.errors.SmartBugsError(f"setting {k}: string expected, '{v}' found")
+
+            elif k == "llm":
+                if isinstance(v, dict):
+                    self.llm = v
+                else:
+                    raise sb.errors.SmartBugsError(f"setting {k}: mapping expected, '{v}' found")
 
             elif k == "mem_limit":
                 try:

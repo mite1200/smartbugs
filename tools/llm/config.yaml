@@ -1,0 +1,7 @@
+name: Generic LLM Analyzer
+info: Profile-driven remote LLM analysis with deterministic parsing and provenance capture
+origin: https://github.com/mite1200/smartbugs
+version: "1"
+runner: llm
+solidity:
+    solc: false

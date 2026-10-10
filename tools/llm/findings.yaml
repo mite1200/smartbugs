@@ -1,0 +1,6 @@
+reentrancy:
+    severity: high
+    classification: SWC-107
+    method: LLM analysis profile
+    descr_short: Reentrancy vulnerability
+    descr_long: The configured LLM analysis profile classified the contract as reentrant.

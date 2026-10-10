@@ -15,6 +15,7 @@ import sb.docker
 import sb.errors
 import sb.io
 import sb.logging
+import sb.runners
 import sb.parsing
 import sb.sarif
 import sb.settings
@@ -31,7 +32,9 @@ def task_log_dict(
     sb_bin_log: list[str],
     docker_args: dict[str, Any],
 ) -> dict[str, Any]:
-    return {
+    runner = getattr(task.tool, "runner", "docker")
+    execution_details = docker_args
+    result = {
         "filename": task.relfn,
         "runid": task.settings.runid,
         "result": {
@@ -46,9 +49,12 @@ def task_log_dict(
         },
         "solc": str(task.solc_version) if task.solc_version else None,
         "tool": task.tool.dict(),
-        "docker": docker_args,
+        "docker": execution_details if runner == "docker" else {},
         "platform": sb.cfg.PLATFORM,
     }
+    if runner != "docker":
+        result["execution"] = {"runner": runner, **execution_details}
+    return result
 
 
 def execute(task: sb.tasks.Task) -> float:
@@ -91,17 +97,19 @@ def execute(task: sb.tasks.Task) -> float:
             raise sb.errors.SmartBugsError(f"Cannot clear old output {fn}")
 
     # perform analysis
-    # Docker causes spurious connection errors
-    # try three times before giving up
-    for i in range(3):
+    # Docker causes spurious connection errors; LLM provider retries are handled
+    # inside the LLM runner so malformed model output is never retried here
+    attempts = 3 if getattr(task.tool, "runner", "docker") == "docker" else 1
+    for i in range(attempts):
         try:
             start_time = time.time()
-            exit_code, tool_log, tool_output, sb_bin_log, docker_args = sb.docker.execute(task)
+            exit_code, tool_log, tool_output, sb_bin_log, execution_details = sb.runners.execute(
+                task
+            )
             duration = time.time() - start_time
-            if i < 2:
-                break
+            break
         except sb.errors.SmartBugsError:
-            if i < 2:
+            if i < attempts - 1:
                 # wait 3 to 8 minutes
                 time.sleep(random.randint(3, 8) * 60)
             else:
@@ -109,7 +117,14 @@ def execute(task: sb.tasks.Task) -> float:
 
     # write result to files
     task_log = task_log_dict(
-        task, start_time, duration, exit_code, tool_log, tool_output, sb_bin_log, docker_args
+        task,
+        start_time,
+        duration,
+        exit_code,
+        tool_log,
+        tool_output,
+        sb_bin_log,
+        execution_details,
     )
     if tool_log:
         sb.io.write_text(fn_tool_log, tool_log)

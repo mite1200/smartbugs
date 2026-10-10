@@ -23,6 +23,8 @@ FIELDS = (
     "command",
     "entrypoint",
     "network",
+    "runner",
+    "options",
 )
 
 
@@ -50,11 +52,16 @@ class Tool:
     cpu_quota: Optional[int]
     mem_limit: Optional[str]
     network: Optional[str]
+    runner: str
+    options: dict[str, Any]
     _command: Optional[string.Template]
     _entrypoint: Optional[string.Template]
     absbin: Optional[str]
 
     def __init__(self, cfg: dict[str, Any]) -> None:
+        cfg = cfg.copy()
+        cfg.setdefault("runner", "docker")
+        cfg.setdefault("options", {})
         for k in FIELDS:
             v = cfg.get(k)
             if v is not None:
@@ -83,6 +90,11 @@ class Tool:
                             f"Tool: value of attribute '{k}' is not a valid "
                             f"memory specifcation.\n{cfg}"
                         )
+                elif k == "options":
+                    if not isinstance(v, dict):
+                        raise sb.errors.SmartBugsError(
+                            f"Tool: value of attribute '{k}' is not a mapping.\n{cfg}"
+                        )
                 elif not isinstance(v, str):
                     raise sb.errors.SmartBugsError(
                         f"Tool: value of attribute '{k}' is not a string.\n{cfg}"
@@ -95,14 +107,18 @@ class Tool:
         for k in ("id", "mode"):
             if not getattr(self, k):
                 raise sb.errors.InternalError(f"Tool: Field '{k}' missing.\n{cfg}")
-        if not self.image:
+        if self.runner not in ("docker", "llm"):
+            raise sb.errors.SmartBugsError(
+                f"Tool {self.id}/{self.mode}: unknown runner '{self.runner}'"
+            )
+        if self.runner == "docker" and not self.image:
             raise sb.errors.SmartBugsError(f"Tool {self.id}/{self.mode}: no image specified")
         extras = set(cfg.keys()).difference(FIELDS)
         if extras:
             raise sb.errors.SmartBugsError(
                 f"Tool {self.id}/{self.mode}: extra field(s) {', '.join(extras)}"
             )
-        if not self._command and not self._entrypoint:
+        if self.runner == "docker" and not self._command and not self._entrypoint:
             raise sb.errors.SmartBugsError(
                 f"Tool {self.id}/{self.mode}: neither command nor entrypoint specified."
             )
