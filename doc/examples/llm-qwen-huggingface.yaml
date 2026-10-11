@@ -1,0 +1,24 @@
+tools: [llm]
+files: [samples/0.8.24/SimpleDAO.sol]
+json: true
+processes: 1
+runid: llm-qwen38-27b-deepinfra-zero-shot
+
+llm:
+  profile: reentrancy
+  strategy: zero_shot
+
+  provider:
+    provider: openai_compatible
+    model: Qwen/Qwen3.8-27B:deepinfra
+    base_url: https://router.huggingface.co/v1
+    api_key_env: HF_TOKEN
+    api_style: chat_completions
+
+    max_output_tokens: 16384
+    request_timeout: 120
+    retry_count: 2
+    retry_backoff_seconds: 1
+    recommended_concurrency: 1
+    reasoning:
+      effort: medium
