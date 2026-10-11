@@ -1,0 +1,18 @@
+tools: [llm]
+files: [samples/0.8.24/SimpleDAO.sol]
+json: true
+processes: 1
+runid: llm-openai-zero-shot
+llm:
+  profile: reentrancy
+  strategy: zero_shot
+  provider:
+    provider: openai
+    model: gpt-6-luna
+    api_key_env: OPENAI_API_KEY
+    max_output_tokens: 16384
+    request_timeout: 120
+    retry_count: 2
+    recommended_concurrency: 1
+    reasoning:
+      effort: medium

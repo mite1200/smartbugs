@@ -1,0 +1,18 @@
+tools: [llm]
+files: [samples/0.8.24/SimpleDAO.sol]
+json: true
+processes: 1
+runid: llm-qwen-few-shot
+llm:
+  profile: reentrancy
+  strategy: few_shot
+  provider:
+    provider: openai_compatible
+    model: <Qwen model ID>
+    base_url: <provider-specific endpoint>
+    api_key_env: <provider-specific environment variable>
+    api_style: chat_completions
+    max_output_tokens: 16384
+    request_timeout: 120
+    retry_count: 2
+    recommended_concurrency: 1

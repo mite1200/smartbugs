@@ -34,3 +34,12 @@
 #sarif: false
 #
 #quiet: false
+#
+## Native LLM analyzer configuration; see doc/llm-analyzer.md
+#llm:
+#  profile: reentrancy
+#  strategy: zero_shot
+#  provider:
+#    provider: openai
+#    model: <model-id>
+#    api_key_env: OPENAI_API_KEY

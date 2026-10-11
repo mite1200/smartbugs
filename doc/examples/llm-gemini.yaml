@@ -1,0 +1,18 @@
+tools: [llm]
+files: [samples/0.8.24/SimpleDAO.sol]
+json: true
+processes: 1
+runid: llm-gemini-zero-shot
+llm:
+  profile: reentrancy
+  strategy: zero_shot
+  provider:
+    provider: gemini
+    model: gemini-3.8-flash
+    api_key_env: GEMINI_API_KEY
+    max_output_tokens: 16384
+    request_timeout: 120
+    retry_count: 2
+    recommended_concurrency: 1
+    reasoning:
+      effort: medium
