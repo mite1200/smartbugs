@@ -102,8 +102,10 @@ class OpenAIChatProvider(LLMProvider):
             payload["temperature"] = self.config.temperature
         if self.config.max_output_tokens is not None:
             payload["max_tokens"] = self.config.max_output_tokens
-        payload.update(self.config.reasoning)
         payload.update(_mapping_option(self.config.options, "request_body"))
+        effort = self.config.reasoning.get("effort")
+        if effort is not None:
+            payload["reasoning_effort"] = effort
         response = self._post(
             f"{base_url}/chat/completions",
             {"Authorization": f"Bearer {self.api_key}", "Content-Type": "application/json"},

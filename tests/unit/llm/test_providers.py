@@ -136,7 +136,45 @@ def test_openai_compatible_defaults_to_chat_completions(monkeypatch):
     result = provider.infer("prompt")
     assert session.calls[0][0].endswith("/chat/completions")
     assert "temperature" not in session.calls[0][1]["json"]
+    assert "reasoning_effort" not in session.calls[0][1]["json"]
     assert result.output_tokens == 3
+
+
+def test_openai_compatible_includes_normalized_reasoning_effort(monkeypatch):
+    monkeypatch.setenv("TEST_LLM_KEY", "secret")
+    session = FakeSession(
+        fake_response(
+            {
+                "choices": [{"message": {"content": "{}"}}],
+                "usage": {},
+            }
+        )
+    )
+    provider = create_provider(config("openai_compatible", reasoning={"effort": "medium"}), session)
+    provider.infer("prompt")
+    assert session.calls[0][1]["json"]["reasoning_effort"] == "medium"
+
+
+def test_openai_compatible_normalized_reasoning_effort_overrides_request_body(monkeypatch):
+    monkeypatch.setenv("TEST_LLM_KEY", "secret")
+    session = FakeSession(
+        fake_response(
+            {
+                "choices": [{"message": {"content": "{}"}}],
+                "usage": {},
+            }
+        )
+    )
+    provider = create_provider(
+        config(
+            "openai_compatible",
+            reasoning={"effort": "medium"},
+            options={"request_body": {"reasoning_effort": "low"}},
+        ),
+        session,
+    )
+    provider.infer("prompt")
+    assert session.calls[0][1]["json"]["reasoning_effort"] == "medium"
 
 
 def test_openai_compatible_explicit_temperature_remains_supported(monkeypatch):

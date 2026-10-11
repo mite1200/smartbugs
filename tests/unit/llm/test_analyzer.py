@@ -125,6 +125,18 @@ def test_provenance_does_not_persist_secrets(monkeypatch):
     assert provenance["inference_parameters"]["option_names"] == ["authorization", "request_body"]
 
 
+def test_provenance_retains_normalized_reasoning_effort():
+    provider = FakeProvider([valid_response()])
+    config = provider_config(
+        provider="openai_compatible",
+        base_url="https://provider.example/api",
+        reasoning={"effort": "medium"},
+    )
+    analyzer = LLMAnalyzer(load_profile("reentrancy"), config, provider=provider)
+    provenance = analyzer.analyze("contract A {}", "A.sol", "zero_shot")["provenance"]
+    assert provenance["inference_parameters"]["reasoning"] == {"effort": "medium"}
+
+
 def test_reentrant_finding_uses_deterministic_role_preference():
     raw = json.dumps(
         {
