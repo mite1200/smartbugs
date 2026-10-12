@@ -1,14 +1,15 @@
-condition_id: qwen3.8-27b-deepinfra
+condition_id: qwen3.8-27b-cerebras
+
 provider:
   provider: openai_compatible
-  model: Qwen/Qwen3.8-27B:deepinfra
-  base_url: https://router.huggingface.co/v1
-  api_key_env: HF_TOKEN
+  model: qwen-3.8-27b
+  base_url: https://api.cerebras.ai/v1
+  api_key_env: CEREBRAS_API_KEY
   api_style: chat_completions
   max_output_tokens: 16384
   request_timeout: 120
   retry_count: 2
   retry_backoff_seconds: 1
-  recommended_concurrency: 1
+  recommended_concurrency: 4
   reasoning:
     effort: medium

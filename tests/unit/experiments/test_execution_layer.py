@@ -3,6 +3,7 @@ import importlib.util
 import json
 from pathlib import Path
 
+import pytest
 import yaml
 
 from experiments.reentrancy.execution import (
@@ -46,6 +47,29 @@ def test_plan_has_27_deterministic_conditions_and_11664_observations():
         == "aggregated__gemini-3.8-flash__zero-shot__r1"
     )
     assert experiment["benchmark_commit"] == "d7c9496121931cff7c55b2047d18fb048fefe2cb"
+
+
+def test_contract_id_selects_exactly_one_manifest_contract():
+    contracts = [
+        Contract("a.sol", "a.sol", "Safe", "hash-a"),
+        Contract("nested/b.sol", "nested/b.sol", "Reentrant", "hash-b"),
+    ]
+    selected = RUNNER.select_contracts(contracts, None, "nested/b.sol")
+    assert selected == [contracts[1]]
+
+
+def test_unknown_contract_id_fails_clearly():
+    contracts = [Contract("a.sol", "a.sol", "Safe", "hash-a")]
+    with pytest.raises(
+        ValueError, match="contract_id not found in canonical manifest: missing.sol"
+    ):
+        RUNNER.select_contracts(contracts, None, "missing.sol")
+
+
+def test_contract_id_and_limit_are_mutually_exclusive():
+    contracts = [Contract("a.sol", "a.sol", "Safe", "hash-a")]
+    with pytest.raises(ValueError, match="mutually exclusive"):
+        RUNNER.select_contracts(contracts, 1, "a.sol")
 
 
 def observation_fixture(tmp_path: Path, strategy: str = "zero_shot"):

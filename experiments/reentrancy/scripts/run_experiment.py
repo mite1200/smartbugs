@@ -42,6 +42,21 @@ def select_condition(
     return matches[0]
 
 
+def select_contracts(contracts: list, limit: int | None, contract_id: str | None) -> list:
+    if limit is not None and contract_id is not None:
+        raise ValueError("--limit-contracts and --contract-id are mutually exclusive")
+    if contract_id is not None:
+        matches = [contract for contract in contracts if contract.contract_id == contract_id]
+        if not matches:
+            raise ValueError(f"contract_id not found in canonical manifest: {contract_id}")
+        return matches
+    if limit is not None:
+        if limit <= 0:
+            raise ValueError("limit must be positive")
+        return contracts[:limit]
+    return contracts
+
+
 def plan_condition(
     repository_root: Path,
     benchmark_root: Path,
@@ -49,14 +64,12 @@ def plan_condition(
     strategy: str,
     repeat: int,
     limit: int | None = None,
+    contract_id: str | None = None,
 ) -> tuple[dict, Condition, list, list, list]:
     config_root = repository_root / "experiments/reentrancy/configs"
     experiment = load_yaml(config_root / "experiment.yaml")
     contracts = load_manifest(repository_root / experiment["manifest"])
-    if limit is not None:
-        if limit <= 0:
-            raise ValueError("limit must be positive")
-        contracts = contracts[:limit]
+    contracts = select_contracts(contracts, limit, contract_id)
     verify_benchmark(benchmark_root, experiment, contracts)
     conditions = build_conditions(experiment, load_model_configs(config_root / "models"))
     condition = select_condition(conditions, model_condition, strategy, repeat)
@@ -143,7 +156,9 @@ def main() -> None:
     parser.add_argument("--strategy", required=True)
     parser.add_argument("--repeat", type=int, required=True)
     parser.add_argument("--processes", type=int, default=1)
-    parser.add_argument("--limit-contracts", type=int)
+    selection = parser.add_mutually_exclusive_group()
+    selection.add_argument("--limit-contracts", type=int)
+    selection.add_argument("--contract-id")
     parser.add_argument("--execute", action="store_true")
     parser.add_argument("--repository-root", type=Path, default=Path.cwd())
     args = parser.parse_args()
@@ -157,6 +172,7 @@ def main() -> None:
         args.strategy,
         args.repeat,
         args.limit_contracts,
+        args.contract_id,
     )
     report = summary(condition, completed, missing, conflicts)
     print(json.dumps(report, indent=2, sort_keys=True))
@@ -180,6 +196,7 @@ def main() -> None:
             args.strategy,
             args.repeat,
             args.limit_contracts,
+            args.contract_id,
         )
         if conflicts:
             raise RuntimeError("conflicting result directories must be resolved manually")
