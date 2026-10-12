@@ -113,7 +113,7 @@ class ProviderConfig:
 @dataclass(frozen=True)
 class ProviderResponse:
     raw_response: str
-    text: str
+    text: Optional[str]
     request_id: Optional[str] = None
     input_tokens: Optional[int] = None
     output_tokens: Optional[int] = None

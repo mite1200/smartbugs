@@ -10,7 +10,9 @@ from sb.llm.models import ProviderConfig, ProviderResponse
 
 
 class ProviderError(Exception):
-    pass
+    def __init__(self, message: str, response: Optional[ProviderResponse] = None) -> None:
+        super().__init__(message)
+        self.response = response
 
 
 class TransientProviderError(ProviderError):
@@ -55,6 +57,36 @@ class LLMProvider(ABC):
     def _redact(self, value: str) -> str:
         return value.replace(self.api_key, "[REDACTED]")
 
+    def _diagnostic_response(
+        self,
+        response: requests.Response,
+        *,
+        request_id: Optional[str] = None,
+        input_tokens: Optional[int] = None,
+        output_tokens: Optional[int] = None,
+        reasoning_tokens: Optional[int] = None,
+        model_version: Optional[str] = None,
+        metadata: Optional[dict[str, Any]] = None,
+    ) -> ProviderResponse:
+        diagnostic_metadata = dict(metadata or {})
+        diagnostic_metadata["http_status"] = response.status_code
+        return ProviderResponse(
+            raw_response=self._redact(response.text),
+            text=None,
+            request_id=request_id or response.headers.get("x-request-id"),
+            input_tokens=input_tokens,
+            output_tokens=output_tokens,
+            reasoning_tokens=reasoning_tokens,
+            model_version=model_version,
+            metadata=diagnostic_metadata,
+        )
+
+    def _response_json(self, response: requests.Response) -> dict[str, Any]:
+        try:
+            return _response_json(response)
+        except ProviderError as error:
+            raise ProviderError(str(error), self._diagnostic_response(response)) from error
+
 
 class OpenAIResponsesProvider(LLMProvider):
     def infer(self, prompt: str) -> ProviderResponse:
@@ -75,10 +107,22 @@ class OpenAIResponsesProvider(LLMProvider):
             {"Authorization": f"Bearer {self.api_key}", "Content-Type": "application/json"},
             payload,
         )
-        data = _response_json(response)
-        text = _responses_text(data)
+        data = self._response_json(response)
         usage = data.get("usage") or {}
         output_details = usage.get("output_tokens_details") or {}
+        diagnostic = self._diagnostic_response(
+            response,
+            request_id=data.get("id"),
+            input_tokens=usage.get("input_tokens"),
+            output_tokens=usage.get("output_tokens"),
+            reasoning_tokens=output_details.get("reasoning_tokens"),
+            model_version=data.get("model"),
+            metadata={"status": data.get("status")},
+        )
+        try:
+            text = _responses_text(data)
+        except ProviderError as error:
+            raise ProviderError(str(error), diagnostic) from error
         return ProviderResponse(
             raw_response=self._redact(response.text),
             text=self._redact(text),
@@ -111,13 +155,23 @@ class OpenAIChatProvider(LLMProvider):
             {"Authorization": f"Bearer {self.api_key}", "Content-Type": "application/json"},
             payload,
         )
-        data = _response_json(response)
+        data = self._response_json(response)
+        usage = data.get("usage") or {}
+        details = usage.get("completion_tokens_details") or {}
+        diagnostic = self._diagnostic_response(
+            response,
+            request_id=data.get("id"),
+            input_tokens=usage.get("prompt_tokens"),
+            output_tokens=usage.get("completion_tokens"),
+            reasoning_tokens=details.get("reasoning_tokens"),
+            model_version=data.get("model"),
+        )
         try:
             text = data["choices"][0]["message"]["content"]
         except (KeyError, IndexError, TypeError) as error:
-            raise ProviderError("OpenAI-compatible response contains no message content") from error
-        usage = data.get("usage") or {}
-        details = usage.get("completion_tokens_details") or {}
+            raise ProviderError(
+                "OpenAI-compatible response contains no message content", diagnostic
+            ) from error
         return ProviderResponse(
             raw_response=self._redact(response.text),
             text=self._redact(text),
@@ -156,15 +210,29 @@ class GeminiProvider(LLMProvider):
             {"x-goog-api-key": self.api_key, "Content-Type": "application/json"},
             payload,
         )
-        data = _response_json(response)
+        data = self._response_json(response)
+        usage = data.get("usageMetadata") or {}
+        candidates = data.get("candidates") or []
+        first_candidate = candidates[0] if candidates and isinstance(candidates[0], dict) else {}
+        metadata = {}
+        if first_candidate.get("finishReason") is not None:
+            metadata["finish_reason"] = first_candidate["finishReason"]
+        diagnostic = self._diagnostic_response(
+            response,
+            request_id=data.get("responseId"),
+            input_tokens=usage.get("promptTokenCount"),
+            output_tokens=usage.get("candidatesTokenCount"),
+            reasoning_tokens=usage.get("thoughtsTokenCount"),
+            model_version=data.get("modelVersion"),
+            metadata=metadata,
+        )
         try:
             parts = data["candidates"][0]["content"]["parts"]
             text = "".join(part.get("text", "") for part in parts)
         except (KeyError, IndexError, TypeError) as error:
-            raise ProviderError("Gemini response contains no candidate text") from error
+            raise ProviderError("Gemini response contains no candidate text", diagnostic) from error
         if not text:
-            raise ProviderError("Gemini response contains empty candidate text")
-        usage = data.get("usageMetadata") or {}
+            raise ProviderError("Gemini response contains empty candidate text", diagnostic)
         return ProviderResponse(
             raw_response=self._redact(response.text),
             text=self._redact(text),

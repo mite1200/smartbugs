@@ -1,9 +1,28 @@
 import json
 
+import pytest
+
 from sb.llm.analyzer import LLMAnalyzer
 from sb.llm.models import ProviderConfig, ProviderResponse
 from sb.llm.profiles import load_profile
-from sb.llm.providers import TransientProviderError
+from sb.llm.providers import GeminiProvider, OpenAIResponsesProvider, TransientProviderError
+
+
+class FakeHTTPResponse:
+    def __init__(self, data, status_code=200, headers=None):
+        self.status_code = status_code
+        self.text = json.dumps(data)
+        self.headers = headers or {}
+
+
+class FakeSession:
+    def __init__(self, response):
+        self.response = response
+        self.calls = []
+
+    def post(self, url, **kwargs):
+        self.calls.append((url, kwargs))
+        return self.response
 
 
 class FakeProvider:
@@ -105,6 +124,132 @@ def test_malformed_model_output_is_not_retried():
     assert len(provider.prompts) == 1
     assert result["status"] == "invalid_output"
     assert result["provenance"]["raw_model_text"] == "not json"
+
+
+@pytest.mark.parametrize(
+    ("body", "expected_message", "expected_finish_reason"),
+    [
+        (
+            {
+                "candidates": [
+                    {
+                        "content": {"parts": [{"thought": True}]},
+                        "finishReason": "STOP",
+                    }
+                ],
+                "usageMetadata": {
+                    "promptTokenCount": 20,
+                    "candidatesTokenCount": 0,
+                    "thoughtsTokenCount": 10,
+                },
+                "modelVersion": "gemini-3.8-flash",
+                "responseId": "response-empty",
+            },
+            "Gemini response contains empty candidate text",
+            "STOP",
+        ),
+        (
+            {
+                "candidates": [{"finishReason": "MAX_TOKENS"}],
+                "usageMetadata": {
+                    "promptTokenCount": 30,
+                    "candidatesTokenCount": 100,
+                    "thoughtsTokenCount": 90,
+                },
+                "modelVersion": "gemini-3.8-flash",
+                "responseId": "response-max-tokens",
+            },
+            "Gemini response contains no candidate text",
+            "MAX_TOKENS",
+        ),
+        (
+            {
+                "candidates": [],
+                "promptFeedback": {
+                    "blockReason": "SAFETY",
+                    "safetyRatings": [{"category": "TEST", "probability": "HIGH"}],
+                },
+                "usageMetadata": {"promptTokenCount": 15},
+                "modelVersion": "gemini-3.8-flash",
+                "responseId": "response-blocked",
+            },
+            "Gemini response contains no candidate text",
+            None,
+        ),
+    ],
+)
+def test_gemini_interpretation_errors_preserve_http_response_in_provenance(
+    monkeypatch, body, expected_message, expected_finish_reason
+):
+    monkeypatch.setenv("TEST_GEMINI_KEY", "secret-key")
+    response = FakeHTTPResponse(body, headers={"x-request-id": "header-request-id"})
+    session = FakeSession(response)
+    config = ProviderConfig.from_dict(
+        {
+            "provider": "gemini",
+            "model": "gemini-3.8-flash",
+            "api_key_env": "TEST_GEMINI_KEY",
+            "reasoning": {"effort": "medium"},
+            "retry_count": 2,
+        }
+    )
+    analyzer = LLMAnalyzer(
+        load_profile("reentrancy"), config, provider=GeminiProvider(config, session)
+    )
+    result = analyzer.analyze("contract A {}", "A.sol", "zero_shot")
+    provenance = result["provenance"]
+    assert result["status"] == "technical_error"
+    assert provenance["technical_error"] == {
+        "type": "ProviderError",
+        "message": expected_message,
+    }
+    assert json.loads(provenance["raw_provider_response"]) == body
+    assert provenance["raw_model_text"] is None
+    assert provenance["provider_request_id"] == body["responseId"]
+    assert provenance["provider_model_version"] == "gemini-3.8-flash"
+    assert provenance["provider_metadata"]["http_status"] == 200
+    assert provenance["provider_metadata"].get("finish_reason") == expected_finish_reason
+    assert provenance["usage"]["input_tokens"] == body["usageMetadata"].get("promptTokenCount")
+    assert provenance["usage"]["output_tokens"] == body["usageMetadata"].get("candidatesTokenCount")
+    assert provenance["usage"]["reasoning_tokens"] == body["usageMetadata"].get(
+        "thoughtsTokenCount"
+    )
+    assert len(session.calls) == 1
+
+
+def test_openai_interpretation_error_also_preserves_diagnostics(monkeypatch):
+    monkeypatch.setenv("TEST_OPENAI_KEY", "secret-key")
+    body = {
+        "id": "response-no-text",
+        "model": "gpt-6-luna",
+        "status": "incomplete",
+        "output": [],
+        "usage": {
+            "input_tokens": 12,
+            "output_tokens": 8,
+            "output_tokens_details": {"reasoning_tokens": 8},
+        },
+    }
+    session = FakeSession(FakeHTTPResponse(body))
+    config = ProviderConfig.from_dict(
+        {
+            "provider": "openai",
+            "model": "gpt-6-luna",
+            "api_key_env": "TEST_OPENAI_KEY",
+        }
+    )
+    analyzer = LLMAnalyzer(
+        load_profile("reentrancy"), config, provider=OpenAIResponsesProvider(config, session)
+    )
+    provenance = analyzer.analyze("contract A {}", "A.sol", "zero_shot")["provenance"]
+    assert json.loads(provenance["raw_provider_response"]) == body
+    assert provenance["provider_request_id"] == "response-no-text"
+    assert provenance["provider_metadata"] == {"http_status": 200, "status": "incomplete"}
+    assert provenance["usage"] == {
+        "input_tokens": 12,
+        "output_tokens": 8,
+        "reasoning_tokens": 8,
+    }
 
 
 def test_provenance_does_not_persist_secrets(monkeypatch):

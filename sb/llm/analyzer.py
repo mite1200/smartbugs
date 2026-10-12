@@ -7,7 +7,7 @@ from sb.llm.models import ParseResult, ProviderConfig, ProviderResponse
 from sb.llm.parser import parse_response
 from sb.llm.preprocessing import preprocess
 from sb.llm.profiles.base import AnalysisProfile
-from sb.llm.providers import LLMProvider, TransientProviderError, create_provider
+from sb.llm.providers import LLMProvider, ProviderError, TransientProviderError, create_provider
 from sb.llm.provenance import build_provenance
 
 
@@ -45,7 +45,12 @@ class LLMAnalyzer:
         technical_error: Optional[dict[str, Any]] = None
         try:
             response = self._infer(prompt, retry_log)
+            if response.text is None:
+                raise ProviderError("provider response contains no model text", response)
             parse_result = parse_response(response.text, self.profile, line_count)
+        except ProviderError as error:
+            response = error.response or response
+            technical_error = {"type": type(error).__name__, "message": str(error)}
         except Exception as error:
             technical_error = {"type": type(error).__name__, "message": str(error)}
         runtime = time.monotonic() - started
