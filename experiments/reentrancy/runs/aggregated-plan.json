@@ -1,0 +1,284 @@
+{
+  "analyzer_tag": "thesis-llm-analyzer-v1",
+  "benchmark_commit": "d7c9496121931cff7c55b2047d18fb048fefe2cb",
+  "condition_count": 27,
+  "conditions": [
+    {
+      "dataset": "aggregated",
+      "expected_observations": 432,
+      "model": "gemini-3.8-flash",
+      "model_condition": "gemini-3.8-flash",
+      "provider": "gemini",
+      "repeat": 1,
+      "runid": "aggregated__gemini-3.8-flash__few-shot__r1",
+      "strategy": "few_shot"
+    },
+    {
+      "dataset": "aggregated",
+      "expected_observations": 432,
+      "model": "gemini-3.8-flash",
+      "model_condition": "gemini-3.8-flash",
+      "provider": "gemini",
+      "repeat": 2,
+      "runid": "aggregated__gemini-3.8-flash__few-shot__r2",
+      "strategy": "few_shot"
+    },
+    {
+      "dataset": "aggregated",
+      "expected_observations": 432,
+      "model": "gemini-3.8-flash",
+      "model_condition": "gemini-3.8-flash",
+      "provider": "gemini",
+      "repeat": 3,
+      "runid": "aggregated__gemini-3.8-flash__few-shot__r3",
+      "strategy": "few_shot"
+    },
+    {
+      "dataset": "aggregated",
+      "expected_observations": 432,
+      "model": "gemini-3.8-flash",
+      "model_condition": "gemini-3.8-flash",
+      "provider": "gemini",
+      "repeat": 1,
+      "runid": "aggregated__gemini-3.8-flash__structured-reasoning__r1",
+      "strategy": "structured_reasoning"
+    },
+    {
+      "dataset": "aggregated",
+      "expected_observations": 432,
+      "model": "gemini-3.8-flash",
+      "model_condition": "gemini-3.8-flash",
+      "provider": "gemini",
+      "repeat": 2,
+      "runid": "aggregated__gemini-3.8-flash__structured-reasoning__r2",
+      "strategy": "structured_reasoning"
+    },
+    {
+      "dataset": "aggregated",
+      "expected_observations": 432,
+      "model": "gemini-3.8-flash",
+      "model_condition": "gemini-3.8-flash",
+      "provider": "gemini",
+      "repeat": 3,
+      "runid": "aggregated__gemini-3.8-flash__structured-reasoning__r3",
+      "strategy": "structured_reasoning"
+    },
+    {
+      "dataset": "aggregated",
+      "expected_observations": 432,
+      "model": "gemini-3.8-flash",
+      "model_condition": "gemini-3.8-flash",
+      "provider": "gemini",
+      "repeat": 1,
+      "runid": "aggregated__gemini-3.8-flash__zero-shot__r1",
+      "strategy": "zero_shot"
+    },
+    {
+      "dataset": "aggregated",
+      "expected_observations": 432,
+      "model": "gemini-3.8-flash",
+      "model_condition": "gemini-3.8-flash",
+      "provider": "gemini",
+      "repeat": 2,
+      "runid": "aggregated__gemini-3.8-flash__zero-shot__r2",
+      "strategy": "zero_shot"
+    },
+    {
+      "dataset": "aggregated",
+      "expected_observations": 432,
+      "model": "gemini-3.8-flash",
+      "model_condition": "gemini-3.8-flash",
+      "provider": "gemini",
+      "repeat": 3,
+      "runid": "aggregated__gemini-3.8-flash__zero-shot__r3",
+      "strategy": "zero_shot"
+    },
+    {
+      "dataset": "aggregated",
+      "expected_observations": 432,
+      "model": "gpt-6-luna",
+      "model_condition": "gpt-6-luna",
+      "provider": "openai",
+      "repeat": 1,
+      "runid": "aggregated__gpt-6-luna__few-shot__r1",
+      "strategy": "few_shot"
+    },
+    {
+      "dataset": "aggregated",
+      "expected_observations": 432,
+      "model": "gpt-6-luna",
+      "model_condition": "gpt-6-luna",
+      "provider": "openai",
+      "repeat": 2,
+      "runid": "aggregated__gpt-6-luna__few-shot__r2",
+      "strategy": "few_shot"
+    },
+    {
+      "dataset": "aggregated",
+      "expected_observations": 432,
+      "model": "gpt-6-luna",
+      "model_condition": "gpt-6-luna",
+      "provider": "openai",
+      "repeat": 3,
+      "runid": "aggregated__gpt-6-luna__few-shot__r3",
+      "strategy": "few_shot"
+    },
+    {
+      "dataset": "aggregated",
+      "expected_observations": 432,
+      "model": "gpt-6-luna",
+      "model_condition": "gpt-6-luna",
+      "provider": "openai",
+      "repeat": 1,
+      "runid": "aggregated__gpt-6-luna__structured-reasoning__r1",
+      "strategy": "structured_reasoning"
+    },
+    {
+      "dataset": "aggregated",
+      "expected_observations": 432,
+      "model": "gpt-6-luna",
+      "model_condition": "gpt-6-luna",
+      "provider": "openai",
+      "repeat": 2,
+      "runid": "aggregated__gpt-6-luna__structured-reasoning__r2",
+      "strategy": "structured_reasoning"
+    },
+    {
+      "dataset": "aggregated",
+      "expected_observations": 432,
+      "model": "gpt-6-luna",
+      "model_condition": "gpt-6-luna",
+      "provider": "openai",
+      "repeat": 3,
+      "runid": "aggregated__gpt-6-luna__structured-reasoning__r3",
+      "strategy": "structured_reasoning"
+    },
+    {
+      "dataset": "aggregated",
+      "expected_observations": 432,
+      "model": "gpt-6-luna",
+      "model_condition": "gpt-6-luna",
+      "provider": "openai",
+      "repeat": 1,
+      "runid": "aggregated__gpt-6-luna__zero-shot__r1",
+      "strategy": "zero_shot"
+    },
+    {
+      "dataset": "aggregated",
+      "expected_observations": 432,
+      "model": "gpt-6-luna",
+      "model_condition": "gpt-6-luna",
+      "provider": "openai",
+      "repeat": 2,
+      "runid": "aggregated__gpt-6-luna__zero-shot__r2",
+      "strategy": "zero_shot"
+    },
+    {
+      "dataset": "aggregated",
+      "expected_observations": 432,
+      "model": "gpt-6-luna",
+      "model_condition": "gpt-6-luna",
+      "provider": "openai",
+      "repeat": 3,
+      "runid": "aggregated__gpt-6-luna__zero-shot__r3",
+      "strategy": "zero_shot"
+    },
+    {
+      "dataset": "aggregated",
+      "expected_observations": 432,
+      "model": "Qwen/Qwen3.8-27B:deepinfra",
+      "model_condition": "qwen3.8-27b-deepinfra",
+      "provider": "openai_compatible",
+      "repeat": 1,
+      "runid": "aggregated__qwen3.8-27b-deepinfra__few-shot__r1",
+      "strategy": "few_shot"
+    },
+    {
+      "dataset": "aggregated",
+      "expected_observations": 432,
+      "model": "Qwen/Qwen3.8-27B:deepinfra",
+      "model_condition": "qwen3.8-27b-deepinfra",
+      "provider": "openai_compatible",
+      "repeat": 2,
+      "runid": "aggregated__qwen3.8-27b-deepinfra__few-shot__r2",
+      "strategy": "few_shot"
+    },
+    {
+      "dataset": "aggregated",
+      "expected_observations": 432,
+      "model": "Qwen/Qwen3.8-27B:deepinfra",
+      "model_condition": "qwen3.8-27b-deepinfra",
+      "provider": "openai_compatible",
+      "repeat": 3,
+      "runid": "aggregated__qwen3.8-27b-deepinfra__few-shot__r3",
+      "strategy": "few_shot"
+    },
+    {
+      "dataset": "aggregated",
+      "expected_observations": 432,
+      "model": "Qwen/Qwen3.8-27B:deepinfra",
+      "model_condition": "qwen3.8-27b-deepinfra",
+      "provider": "openai_compatible",
+      "repeat": 1,
+      "runid": "aggregated__qwen3.8-27b-deepinfra__structured-reasoning__r1",
+      "strategy": "structured_reasoning"
+    },
+    {
+      "dataset": "aggregated",
+      "expected_observations": 432,
+      "model": "Qwen/Qwen3.8-27B:deepinfra",
+      "model_condition": "qwen3.8-27b-deepinfra",
+      "provider": "openai_compatible",
+      "repeat": 2,
+      "runid": "aggregated__qwen3.8-27b-deepinfra__structured-reasoning__r2",
+      "strategy": "structured_reasoning"
+    },
+    {
+      "dataset": "aggregated",
+      "expected_observations": 432,
+      "model": "Qwen/Qwen3.8-27B:deepinfra",
+      "model_condition": "qwen3.8-27b-deepinfra",
+      "provider": "openai_compatible",
+      "repeat": 3,
+      "runid": "aggregated__qwen3.8-27b-deepinfra__structured-reasoning__r3",
+      "strategy": "structured_reasoning"
+    },
+    {
+      "dataset": "aggregated",
+      "expected_observations": 432,
+      "model": "Qwen/Qwen3.8-27B:deepinfra",
+      "model_condition": "qwen3.8-27b-deepinfra",
+      "provider": "openai_compatible",
+      "repeat": 1,
+      "runid": "aggregated__qwen3.8-27b-deepinfra__zero-shot__r1",
+      "strategy": "zero_shot"
+    },
+    {
+      "dataset": "aggregated",
+      "expected_observations": 432,
+      "model": "Qwen/Qwen3.8-27B:deepinfra",
+      "model_condition": "qwen3.8-27b-deepinfra",
+      "provider": "openai_compatible",
+      "repeat": 2,
+      "runid": "aggregated__qwen3.8-27b-deepinfra__zero-shot__r2",
+      "strategy": "zero_shot"
+    },
+    {
+      "dataset": "aggregated",
+      "expected_observations": 432,
+      "model": "Qwen/Qwen3.8-27B:deepinfra",
+      "model_condition": "qwen3.8-27b-deepinfra",
+      "provider": "openai_compatible",
+      "repeat": 3,
+      "runid": "aggregated__qwen3.8-27b-deepinfra__zero-shot__r3",
+      "strategy": "zero_shot"
+    }
+  ],
+  "contract_count": 432,
+  "dataset": "aggregated",
+  "dataset_name": "Aggregated Benchmark",
+  "expected_observations": 11664,
+  "experiment_id": "reentrancy-aggregated-v1",
+  "manifest": "experiments/reentrancy/manifests/aggregated.csv",
+  "manifest_sha256": "189bd23ae4501b494cb07e309341fdec13b2fa695dda6eb1d0d3ecef9d043867"
+}

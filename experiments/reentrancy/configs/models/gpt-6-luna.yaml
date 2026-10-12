@@ -1,0 +1,12 @@
+condition_id: gpt-6-luna
+provider:
+  provider: openai
+  model: gpt-6-luna
+  api_key_env: OPENAI_API_KEY
+  max_output_tokens: 16384
+  request_timeout: 120
+  retry_count: 2
+  retry_backoff_seconds: 1
+  recommended_concurrency: 1
+  reasoning:
+    effort: medium

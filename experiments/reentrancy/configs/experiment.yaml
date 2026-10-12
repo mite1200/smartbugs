@@ -1,0 +1,17 @@
+experiment_id: reentrancy-aggregated-v1
+dataset: aggregated
+dataset_name: Aggregated Benchmark
+manifest: experiments/reentrancy/manifests/aggregated.csv
+benchmark_commit: d7c9496121931cff7c55b2047d18fb048fefe2cb
+analyzer_tag: thesis-llm-analyzer-v1
+profile: reentrancy
+strategies:
+  - zero_shot
+  - structured_reasoning
+  - few_shot
+repeats:
+  - 1
+  - 2
+  - 3
+results_root: experiments/reentrancy/runs/results
+logs_root: experiments/reentrancy/runs/logs

@@ -49,3 +49,12 @@ dataset/solidiFI
 # Build and distribution
 *.spec
 *.manifest
+
+# Thesis experiment runtime artifacts
+experiments/reentrancy/runs/results/
+experiments/reentrancy/runs/logs/
+experiments/reentrancy/runs/locks/
+
+# Regenerable experiment evaluation artifacts
+experiments/reentrancy/evaluation/predictions.csv
+experiments/reentrancy/evaluation/coverage.json

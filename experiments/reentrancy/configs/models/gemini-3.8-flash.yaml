@@ -1,0 +1,12 @@
+condition_id: gemini-3.8-flash
+provider:
+  provider: gemini
+  model: gemini-3.8-flash
+  api_key_env: GEMINI_API_KEY
+  max_output_tokens: 16384
+  request_timeout: 120
+  retry_count: 2
+  retry_backoff_seconds: 1
+  recommended_concurrency: 1
+  reasoning:
+    effort: medium
