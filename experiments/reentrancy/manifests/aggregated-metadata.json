@@ -1,0 +1,138 @@
+{
+  "benchmark_commit": "d7c9496121931cff7c55b2047d18fb048fefe2cb",
+  "benchmark_repository": "https://github.com/ca-foscari-reentrancy-research-group/reentrancy-detection-llms.git",
+  "contract_id_rule": "POSIX-normalized path relative to the benchmark repository root; contract_id equals contract_path",
+  "dataset": "Aggregated Benchmark",
+  "dataset_root": "benchmarks/aggregated-benchmark/src",
+  "duplicate_content_groups": [
+    {
+      "contract_ids": [
+        "benchmarks/aggregated-benchmark/src/safe/0x1495304c6c1fab2a75f88983a524ac783c128ea8.sol",
+        "benchmarks/aggregated-benchmark/src/safe/0x2415605762f26053b343e5d4a6e42d4418fba501.sol"
+      ],
+      "sha256": "c5327b0d88e56ebb08b6e7f8c7a2516ef9a6e5217f36e5e1b2987bebe60f1814"
+    },
+    {
+      "contract_ids": [
+        "benchmarks/aggregated-benchmark/src/safe/0x1f82a2d4672cd56811806928aef2b2fd67dd3d47.sol",
+        "benchmarks/aggregated-benchmark/src/safe/0xb614d1e45fd0ced2575b8fe94338a75c69b7f123.sol"
+      ],
+      "sha256": "f97e84493ad4d28837893bef8774c91a71dd9bb79a86b02a0b15c8fcbaabb49c"
+    }
+  ],
+  "duplicate_filename_groups": [],
+  "generation_timestamp": "2026-10-13T20:38:01.658684+00:00",
+  "ground_truth_rule": "Immediate dataset directory: src/reentrant -> Reentrant, src/safe -> Safe",
+  "manifest_generation_method_version": "1",
+  "multiple_pragma_files": [
+    {
+      "contract_id": "benchmarks/aggregated-benchmark/src/reentrant/0x33813c2f2aab62ac88c234858a1f08448424828f_rs.sol",
+      "pragmas": [
+        "0.6.12",
+        ">=0.6.0",
+        "^0.6.0",
+        "0.6.12",
+        "0.6.12",
+        "^0.6.0",
+        "^0.6.0",
+        "0.6.12"
+      ]
+    },
+    {
+      "contract_id": "benchmarks/aggregated-benchmark/src/safe/0x00cc0e1c488e188922aac9f1703a6f1961c5854b.sol",
+      "pragmas": [
+        "^0.5.0",
+        "^0.5.0"
+      ]
+    },
+    {
+      "contract_id": "benchmarks/aggregated-benchmark/src/safe/0x0aa6c4ff04e4e6512c5348f4b04685af2cd11058.sol",
+      "pragmas": [
+        "^0.5.0",
+        "^0.5.0",
+        "^0.5.0",
+        "^0.5.0",
+        "^0.5.0",
+        "^0.5.5",
+        "^0.5.0",
+        "^0.5.0",
+        "^0.5.0"
+      ]
+    },
+    {
+      "contract_id": "benchmarks/aggregated-benchmark/src/safe/0x2919267682e99995397ab972258c246155ac76b1.sol",
+      "pragmas": [
+        ">=0.4.22 <0.6.0",
+        ">=0.4.22 <0.6.0",
+        ">=0.4.22 <0.6.0",
+        ">=0.4.22 <0.6.0"
+      ]
+    },
+    {
+      "contract_id": "benchmarks/aggregated-benchmark/src/safe/0x2977a7ec99dec674c17dbd94984742a7781647d8.sol",
+      "pragmas": [
+        ">=0.4.22 <0.6.0",
+        ">=0.4.22 <0.6.0",
+        ">=0.4.22 <0.6.0",
+        ">=0.4.22 <0.6.0"
+      ]
+    },
+    {
+      "contract_id": "benchmarks/aggregated-benchmark/src/safe/0x4028da304fd5b141d45404836262beaf14b5d15a.sol",
+      "pragmas": [
+        ">=0.4.22 <0.6.0",
+        ">=0.4.22 <0.6.0",
+        ">=0.4.22 <0.6.0",
+        ">=0.4.22 <0.6.0"
+      ]
+    },
+    {
+      "contract_id": "benchmarks/aggregated-benchmark/src/safe/0x54003dbf6ae6cba6ddae571ccdc34d834b44ab1e.sol",
+      "pragmas": [
+        ">0.4.13 >=0.4.23",
+        ">=0.4.23",
+        ">=0.4.23",
+        ">0.4.13",
+        ">=0.4.23",
+        ">=0.4.23"
+      ]
+    },
+    {
+      "contract_id": "benchmarks/aggregated-benchmark/src/safe/0xf45ae69cca1b9b043dae2c83a5b65bc605bec5f5.sol",
+      "pragmas": [
+        ">0.4.13 >=0.4.23",
+        ">=0.4.23",
+        ">0.4.13",
+        ">=0.4.23",
+        ">=0.4.23",
+        ">=0.4.23"
+      ]
+    }
+  ],
+  "readme_count_discrepancy": {
+    "derived_reentrant": 120,
+    "derived_safe": 312,
+    "derived_total": 432,
+    "readme_reentrant": 122,
+    "readme_safe": 314,
+    "readme_total": 436
+  },
+  "reentrant_count": 120,
+  "safe_count": 312,
+  "solidity_version_distribution": {
+    "(no pragma)": 3,
+    "0.4": 358,
+    "0.5": 62,
+    "0.6": 9
+  },
+  "solidity_version_rule": "Major.minor family extracted from all Solidity pragma directives; all directives must agree, otherwise 'multiple'; '(no pragma)' when absent",
+  "source_distribution": {
+    "cgt": 88,
+    "hg": 21,
+    "rs": 31,
+    "unspecified": 292
+  },
+  "source_rule": "Terminal filename suffix _cgt, _hg, or _rs; otherwise unspecified",
+  "total_contracts": 432,
+  "unreadable_files": []
+}
