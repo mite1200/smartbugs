@@ -115,3 +115,17 @@ The script renders the same preprocessed source and profile prompt used by the
 analyzer, then serializes one user message with `add_generation_prompt=true`
 and `reasoning_effort=medium`. It writes per-prompt counts and a summary under
 `analysis/qwen3.8-27b-cerebras-context/`.
+
+### Cerebras rate-limit pacing
+
+The Qwen Cerebras model configuration enables experiment-layer pacing with a
+60-second window, at most 120,000 exact uncached/input tokens and at most 32
+requests per window. Token counts are read from the generated context-analysis
+CSV by exact `(contract_id, strategy)` key; prompts are never reconstructed for
+pacing.
+
+Only currently missing observations are partitioned. SmartBugs `--processes`
+remains the within-window concurrency control; the intended initial Qwen value
+is 4. The next nonempty quota window starts only after 60 seconds have elapsed
+since the previous nonempty window began. Dry-run output includes each planned
+window's request count, exact token sum and contract IDs.

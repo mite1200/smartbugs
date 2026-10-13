@@ -13,3 +13,9 @@ provider:
   recommended_concurrency: 4
   reasoning:
     effort: medium
+
+rate_limit:
+  window_seconds: 60
+  max_input_tokens_per_window: 120000
+  max_requests_per_window: 32
+  token_count_source: experiments/reentrancy/analysis/qwen3.8-27b-cerebras-context/prompt-token-counts.csv

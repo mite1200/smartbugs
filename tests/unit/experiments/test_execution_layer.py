@@ -7,7 +7,9 @@ import pytest
 import yaml
 
 from experiments.reentrancy.execution import (
+    Condition,
     Contract,
+    Observation,
     build_conditions,
     build_observations,
     inspect_observation,
@@ -70,6 +72,186 @@ def test_contract_id_and_limit_are_mutually_exclusive():
     contracts = [Contract("a.sol", "a.sol", "Safe", "hash-a")]
     with pytest.raises(ValueError, match="mutually exclusive"):
         RUNNER.select_contracts(contracts, 1, "a.sol")
+
+
+def pacing_observations(tmp_path: Path, counts: list[int]):
+    condition = Condition(
+        dataset="aggregated",
+        model_condition="qwen3.8-27b-cerebras",
+        model="qwen-3.8-27b",
+        provider={},
+        strategy="zero_shot",
+        repeat=1,
+        runid="run",
+        rate_limit={
+            "window_seconds": 60,
+            "max_input_tokens_per_window": 120000,
+            "max_requests_per_window": 32,
+            "token_count_source": "tokens.csv",
+        },
+    )
+    observations = []
+    token_counts = {}
+    for index, count in enumerate(counts):
+        contract = Contract(f"contract-{index}", f"contract-{index}", "Safe", f"hash-{index}")
+        observations.append(Observation(condition, contract, tmp_path / f"contract-{index}"))
+        token_counts[(contract.contract_id, "zero_shot")] = count
+    return condition, observations, token_counts
+
+
+def test_pacing_windows_are_deterministic_and_enforce_token_limit(tmp_path):
+    _, observations, token_counts = pacing_observations(tmp_path, [60000, 60000, 1])
+    rate_limit = observations[0].condition.rate_limit
+    first = RUNNER.pacing_windows(observations, "zero_shot", rate_limit, token_counts)
+    second = RUNNER.pacing_windows(observations, "zero_shot", rate_limit, token_counts)
+    assert first == second
+    assert [window.input_tokens for window in first] == [120000, 1]
+    assert [len(window.observations) for window in first] == [2, 1]
+    assert all(window.input_tokens <= 120000 for window in first)
+
+
+def test_pacing_windows_enforce_32_request_limit(tmp_path):
+    _, observations, token_counts = pacing_observations(tmp_path, [1] * 33)
+    windows = RUNNER.pacing_windows(
+        observations, "zero_shot", observations[0].condition.rate_limit, token_counts
+    )
+    assert [len(window.observations) for window in windows] == [32, 1]
+
+
+def test_large_observations_are_placed_without_reordering(tmp_path):
+    _, observations, token_counts = pacing_observations(tmp_path, [70000, 50000, 70000])
+    windows = RUNNER.pacing_windows(
+        observations, "zero_shot", observations[0].condition.rate_limit, token_counts
+    )
+    assert [window.input_tokens for window in windows] == [120000, 70000]
+    assert [
+        [observation.contract.contract_id for observation in window.observations]
+        for window in windows
+    ] == [["contract-0", "contract-1"], ["contract-2"]]
+
+
+def test_observation_exceeding_window_budget_fails(tmp_path):
+    _, observations, token_counts = pacing_observations(tmp_path, [120001])
+    with pytest.raises(ValueError, match="exceeding the per-window budget 120000"):
+        RUNNER.pacing_windows(
+            observations, "zero_shot", observations[0].condition.rate_limit, token_counts
+        )
+
+
+def test_missing_token_count_entry_fails(tmp_path):
+    _, observations, _ = pacing_observations(tmp_path, [1])
+    with pytest.raises(ValueError, match="missing token-count entry"):
+        RUNNER.pacing_windows(observations, "zero_shot", observations[0].condition.rate_limit, {})
+
+
+def test_duplicate_token_count_entry_fails(tmp_path):
+    token_file = tmp_path / "tokens.csv"
+    token_file.write_text(
+        "contract_id,strategy,input_tokens\n" "a.sol,zero_shot,10\n" "a.sol,zero_shot,11\n",
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match="duplicate token-count entry"):
+        RUNNER.load_token_counts(token_file)
+
+
+def test_terminal_observations_are_excluded_before_window_construction(tmp_path):
+    experiment, first = observation_fixture(tmp_path)
+    condition = Condition(
+        **{
+            **first.condition.__dict__,
+            "rate_limit": {
+                "window_seconds": 60,
+                "max_input_tokens_per_window": 120000,
+                "max_requests_per_window": 32,
+                "token_count_source": "tokens.csv",
+            },
+        }
+    )
+    first = Observation(condition, first.contract, first.result_directory)
+    second_contract = Contract("second.sol", "second.sol", "Safe", "second-hash")
+    second = Observation(condition, second_contract, tmp_path / "second.sol")
+    write_provenance(first.result_directory, experiment, first, "invalid_output")
+    missing = [
+        observation
+        for observation in (first, second)
+        if inspect_observation(experiment, observation).state == "missing"
+    ]
+    windows = RUNNER.pacing_windows(
+        missing,
+        "zero_shot",
+        condition.rate_limit,
+        {("second.sol", "zero_shot"): 10},
+    )
+    assert [observation.contract.contract_id for observation in windows[0].observations] == [
+        "second.sol"
+    ]
+
+
+def test_rate_limited_windows_wait_between_executed_windows(monkeypatch, tmp_path):
+    condition, observations, token_counts = pacing_observations(tmp_path, [70000, 70000])
+    windows = RUNNER.pacing_windows(observations, "zero_shot", condition.rate_limit, token_counts)
+    calls = []
+    sleeps = []
+    monkeypatch.setattr(
+        RUNNER, "refresh_window", lambda experiment, window: (window.observations, [])
+    )
+    RUNNER.execute_pacing_windows(
+        tmp_path,
+        tmp_path,
+        {},
+        condition,
+        windows,
+        4,
+        execute=lambda *args: calls.append(args[4]),
+        sleep=sleeps.append,
+    )
+    assert [len(call) for call in calls] == [1, 1]
+    assert sleeps == [60.0]
+
+
+def test_dry_run_returns_before_execution(monkeypatch, capsys, tmp_path):
+    condition, observations, token_counts = pacing_observations(tmp_path, [10])
+    monkeypatch.setattr(
+        RUNNER,
+        "plan_condition",
+        lambda *args: ({}, condition, [], observations, []),
+    )
+    monkeypatch.setattr(
+        RUNNER,
+        "build_pacing_windows",
+        lambda repository_root, selected_condition, missing: RUNNER.pacing_windows(
+            missing, selected_condition.strategy, selected_condition.rate_limit, token_counts
+        ),
+    )
+    monkeypatch.setattr(
+        RUNNER,
+        "execute_pacing_windows",
+        lambda *args, **kwargs: (_ for _ in ()).throw(AssertionError("must not execute")),
+    )
+    monkeypatch.setattr(
+        RUNNER.sys,
+        "argv",
+        [
+            "run_experiment.py",
+            str(tmp_path),
+            "--model-condition",
+            condition.model_condition,
+            "--strategy",
+            condition.strategy,
+            "--repeat",
+            "1",
+        ],
+    )
+    RUNNER.main()
+    report = json.loads(capsys.readouterr().out)
+    assert report["estimated_quota_windows"] == 1
+
+
+def test_non_rate_limited_model_has_no_pacing_windows(tmp_path):
+    _, conditions = configured_matrix()
+    condition = next(item for item in conditions if item.model_condition == "gemini-3.8-flash")
+    assert condition.rate_limit is None
+    assert RUNNER.build_pacing_windows(tmp_path, condition, []) is None
 
 
 def observation_fixture(tmp_path: Path, strategy: str = "zero_shot"):

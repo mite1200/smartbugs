@@ -2,9 +2,13 @@
 """Plan or execute one deterministic reentrancy experiment condition."""
 
 import argparse
+import csv
 import json
 import sys
+import time
+from dataclasses import dataclass
 from pathlib import Path
+from typing import Any, Callable
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
 if str(REPOSITORY_ROOT) not in sys.path:
@@ -55,6 +59,84 @@ def select_contracts(contracts: list, limit: int | None, contract_id: str | None
             raise ValueError("limit must be positive")
         return contracts[:limit]
     return contracts
+
+
+@dataclass(frozen=True)
+class PacingWindow:
+    observations: list
+    input_tokens: int
+
+
+def load_token_counts(path: Path) -> dict[tuple[str, str], int]:
+    with path.open(encoding="utf-8", newline="") as source:
+        rows = list(csv.DictReader(source))
+    counts: dict[tuple[str, str], int] = {}
+    for row in rows:
+        key = (row["contract_id"], row["strategy"])
+        if key in counts:
+            raise ValueError(
+                "duplicate token-count entry for " f"contract_id={key[0]!r}, strategy={key[1]!r}"
+            )
+        try:
+            count = int(row["input_tokens"])
+        except (KeyError, TypeError, ValueError) as error:
+            raise ValueError(f"invalid input_tokens for {key}") from error
+        if count < 0:
+            raise ValueError(f"negative input_tokens for {key}")
+        counts[key] = count
+    return counts
+
+
+def pacing_windows(
+    observations: list,
+    strategy: str,
+    rate_limit: dict[str, Any],
+    token_counts: dict[tuple[str, str], int],
+) -> list[PacingWindow]:
+    max_tokens = int(rate_limit["max_input_tokens_per_window"])
+    max_requests = int(rate_limit["max_requests_per_window"])
+    if max_tokens <= 0 or max_requests <= 0:
+        raise ValueError("rate-limit token and request budgets must be positive")
+    windows: list[PacingWindow] = []
+    current: list = []
+    current_tokens = 0
+    for observation in observations:
+        key = (observation.contract.contract_id, strategy)
+        if key not in token_counts:
+            raise ValueError(
+                "missing token-count entry for " f"contract_id={key[0]!r}, strategy={key[1]!r}"
+            )
+        tokens = token_counts[key]
+        if tokens > max_tokens:
+            raise ValueError(
+                f"observation {key[0]!r}/{key[1]!r} requires {tokens} input tokens, "
+                f"exceeding the per-window budget {max_tokens}"
+            )
+        if current and (len(current) >= max_requests or current_tokens + tokens > max_tokens):
+            windows.append(PacingWindow(current, current_tokens))
+            current = []
+            current_tokens = 0
+        current.append(observation)
+        current_tokens += tokens
+    if current:
+        windows.append(PacingWindow(current, current_tokens))
+    return windows
+
+
+def build_pacing_windows(
+    repository_root: Path, condition: Condition, missing: list
+) -> list[PacingWindow] | None:
+    if condition.rate_limit is None:
+        return None
+    source = condition.rate_limit.get("token_count_source")
+    if not isinstance(source, str) or not source:
+        raise ValueError("rate_limit.token_count_source must be a non-empty path")
+    return pacing_windows(
+        missing,
+        condition.strategy,
+        condition.rate_limit,
+        load_token_counts(repository_root / source),
+    )
 
 
 def plan_condition(
@@ -127,8 +209,14 @@ def smartbugs_configuration(
     }
 
 
-def summary(condition: Condition, completed: list, missing: list, conflicts: list) -> dict:
-    return {
+def summary(
+    condition: Condition,
+    completed: list,
+    missing: list,
+    conflicts: list,
+    windows: list[PacingWindow] | None = None,
+) -> dict:
+    report = {
         "runid": condition.runid,
         "model_condition": condition.model_condition,
         "model": condition.model,
@@ -147,6 +235,88 @@ def summary(condition: Condition, completed: list, missing: list, conflicts: lis
             for observation, state in conflicts
         ],
     }
+    if windows is not None:
+        report["estimated_quota_windows"] = len(windows)
+        report["pacing_windows"] = [
+            {
+                "window": index,
+                "observation_count": len(window.observations),
+                "input_tokens": window.input_tokens,
+                "contract_ids": [
+                    observation.contract.contract_id for observation in window.observations
+                ],
+                "strategy": condition.strategy,
+            }
+            for index, window in enumerate(windows, 1)
+        ]
+    return report
+
+
+def execute_window(
+    repository_root: Path,
+    benchmark_root: Path,
+    experiment: dict,
+    condition: Condition,
+    observations: list,
+    processes: int,
+) -> None:
+    settings = sb.settings.Settings()
+    settings.update(
+        smartbugs_configuration(
+            repository_root,
+            benchmark_root,
+            experiment,
+            condition,
+            observations,
+            processes,
+        )
+    )
+    sb.smartbugs.main(settings)
+
+
+def refresh_window(experiment: dict, window: PacingWindow) -> tuple[list, list]:
+    missing, conflicts = [], []
+    for observation in window.observations:
+        state = inspect_observation(experiment, observation)
+        if state.state == "missing":
+            missing.append(observation)
+        elif state.state == "conflict":
+            conflicts.append((observation, state))
+    return missing, conflicts
+
+
+def execute_pacing_windows(
+    repository_root: Path,
+    benchmark_root: Path,
+    experiment: dict,
+    condition: Condition,
+    windows: list[PacingWindow],
+    processes: int,
+    execute: Callable[[Path, Path, dict, Condition, list, int], None] = execute_window,
+    sleep: Callable[[float], None] = time.sleep,
+) -> None:
+    window_seconds = float(condition.rate_limit["window_seconds"] if condition.rate_limit else 0)
+    if window_seconds <= 0:
+        raise ValueError("rate_limit.window_seconds must be positive")
+    for index, window in enumerate(windows):
+        missing, conflicts = refresh_window(experiment, window)
+        if conflicts:
+            raise RuntimeError("conflicting result directories must be resolved manually")
+        if missing:
+            execute(
+                repository_root,
+                benchmark_root,
+                experiment,
+                condition,
+                missing,
+                processes,
+            )
+        if missing and index < len(windows) - 1:
+            # Requests are started progressively by SmartBugs workers, not all
+            # at the instant this batch begins. A full cooldown after the batch
+            # completes guarantees that late requests cannot overlap the next
+            # quota window.
+            sleep(window_seconds)
 
 
 def main() -> None:
@@ -174,7 +344,8 @@ def main() -> None:
         args.limit_contracts,
         args.contract_id,
     )
-    report = summary(condition, completed, missing, conflicts)
+    windows = build_pacing_windows(repository_root, condition, missing)
+    report = summary(condition, completed, missing, conflicts, windows)
     print(json.dumps(report, indent=2, sort_keys=True))
     if not args.execute:
         return
@@ -202,9 +373,9 @@ def main() -> None:
             raise RuntimeError("conflicting result directories must be resolved manually")
         if not missing:
             return
-        settings = sb.settings.Settings()
-        settings.update(
-            smartbugs_configuration(
+        windows = build_pacing_windows(repository_root, condition, missing)
+        if windows is None:
+            execute_window(
                 repository_root,
                 benchmark_root,
                 experiment,
@@ -212,8 +383,15 @@ def main() -> None:
                 missing,
                 args.processes,
             )
-        )
-        sb.smartbugs.main(settings)
+        else:
+            execute_pacing_windows(
+                repository_root,
+                benchmark_root,
+                experiment,
+                condition,
+                windows,
+                args.processes,
+            )
 
 
 if __name__ == "__main__":

@@ -47,6 +47,7 @@ class Condition:
     strategy: str
     repeat: int
     runid: str
+    rate_limit: dict[str, Any] | None = None
 
 
 @dataclass(frozen=True)
@@ -124,6 +125,7 @@ def build_conditions(experiment: dict[str, Any], models: list[dict[str, Any]]) -
                             strategy,
                             int(repeat),
                         ),
+                        rate_limit=model_config.get("rate_limit"),
                     )
                 )
     return sorted(conditions, key=lambda condition: condition.runid)
