@@ -36,12 +36,23 @@ python experiments/reentrancy/scripts/generate_run_plan.py
 It contains 27 model/strategy/repeat conditions and 11,664 expected Aggregated
 Benchmark observations.
 
+The active main model conditions are:
+
+- `gpt-6-luna`
+- `grok-4.3`
+- `qwen3.8-27b-cerebras`
+
+The earlier Gemini preflight configuration is retained under
+`configs/models/historical/`; it is not loaded into the active matrix. Gemini
+was replaced after repeated preflight responses returned
+`promptFeedback.blockReason="OTHER"` without candidates.
+
 Plan one condition without provider calls:
 
 ```console
 python experiments/reentrancy/scripts/run_experiment.py \
   /path/to/reentrancy-detection-llms \
-  --model-condition gemini-3.8-flash \
+  --model-condition grok-4.3 \
   --strategy zero_shot \
   --repeat 1
 ```
@@ -51,7 +62,7 @@ Plan a three-contract infrastructure subset without changing the manifest:
 ```console
 python experiments/reentrancy/scripts/run_experiment.py \
   /path/to/reentrancy-detection-llms \
-  --model-condition gemini-3.8-flash \
+  --model-condition grok-4.3 \
   --strategy zero_shot \
   --repeat 1 \
   --limit-contracts 3
@@ -63,7 +74,7 @@ Plan or execute exactly one canonical-manifest contract by its full, exact
 ```console
 python experiments/reentrancy/scripts/run_experiment.py \
   /path/to/reentrancy-detection-llms \
-  --model-condition gemini-3.8-flash \
+  --model-condition grok-4.3 \
   --strategy zero_shot \
   --repeat 1 \
   --contract-id benchmarks/aggregated-benchmark/src/reentrant/example.sol
