@@ -16,6 +16,6 @@ provider:
 
 rate_limit:
   window_seconds: 60
-  max_input_tokens_per_window: 120000
-  max_requests_per_window: 32
+  max_input_tokens_per_window: 80000
+  max_requests_per_window: 16
   token_count_source: experiments/reentrancy/analysis/qwen3.8-27b-cerebras-context/prompt-token-counts.csv
