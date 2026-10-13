@@ -45,10 +45,30 @@ def test_plan_has_27_deterministic_conditions_and_11664_observations():
     assert len({condition.runid for condition in first}) == 27
     assert len(first) * 432 == 11664
     assert (
-        make_runid("aggregated", "gemini-3.8-flash", "zero_shot", 1)
-        == "aggregated__gemini-3.8-flash__zero-shot__r1"
+        make_runid("aggregated", "grok-4.3", "zero_shot", 1)
+        == "aggregated__grok-4.3__zero-shot__r1"
     )
     assert experiment["benchmark_commit"] == "d7c9496121931cff7c55b2047d18fb048fefe2cb"
+
+
+def test_active_main_model_conditions_exclude_historical_gemini():
+    _, conditions = configured_matrix()
+    identifiers = {condition.model_condition for condition in conditions}
+    assert identifiers == {"gpt-6-luna", "grok-4.3", "qwen3.8-27b-cerebras"}
+    assert "gemini-3.8-flash" not in identifiers
+
+
+def test_grok_configuration_uses_responses_and_store_false():
+    config = load_yaml(ROOT / "experiments/reentrancy/configs/models/grok-4.3.yaml")
+    provider = config["provider"]
+    assert provider["provider"] == "openai_compatible"
+    assert provider["model"] == "grok-4.3"
+    assert provider["base_url"] == "https://api.x.ai/v1"
+    assert provider["api_style"] == "responses"
+    assert provider["reasoning"] == {"effort": "medium"}
+    assert provider["options"]["request_body"]["store"] is False
+    assert "temperature" not in provider
+    assert "top_p" not in provider
 
 
 def test_contract_id_selects_exactly_one_manifest_contract():
@@ -249,7 +269,7 @@ def test_dry_run_returns_before_execution(monkeypatch, capsys, tmp_path):
 
 def test_non_rate_limited_model_has_no_pacing_windows(tmp_path):
     _, conditions = configured_matrix()
-    condition = next(item for item in conditions if item.model_condition == "gemini-3.8-flash")
+    condition = next(item for item in conditions if item.model_condition == "grok-4.3")
     assert condition.rate_limit is None
     assert RUNNER.build_pacing_windows(tmp_path, condition, []) is None
 
@@ -259,7 +279,7 @@ def observation_fixture(tmp_path: Path, strategy: str = "zero_shot"):
     condition = next(
         condition
         for condition in conditions
-        if condition.model_condition == "gemini-3.8-flash"
+        if condition.model_condition == "grok-4.3"
         and condition.strategy == strategy
         and condition.repeat == 1
     )

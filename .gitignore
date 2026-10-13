@@ -54,6 +54,9 @@ dataset/solidiFI
 experiments/reentrancy/runs/results/
 experiments/reentrancy/runs/logs/
 experiments/reentrancy/runs/locks/
+experiments/reentrancy/runs/*/results/
+experiments/reentrancy/runs/*/logs/
+experiments/reentrancy/runs/*/locks/
 
 # Regenerable experiment evaluation artifacts
 experiments/reentrancy/evaluation/predictions.csv

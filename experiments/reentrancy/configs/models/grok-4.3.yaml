@@ -1,0 +1,18 @@
+condition_id: grok-4.3
+
+provider:
+  provider: openai_compatible
+  model: grok-4.3
+  base_url: https://api.x.ai/v1
+  api_key_env: XAI_API_KEY
+  api_style: responses
+  max_output_tokens: 16384
+  request_timeout: 120
+  retry_count: 2
+  retry_backoff_seconds: 1
+  recommended_concurrency: 16
+  reasoning:
+    effort: medium
+  options:
+    request_body:
+      store: false
