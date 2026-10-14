@@ -1,6 +1,7 @@
 """Deterministic experiment planning and conservative resume classification."""
 
 import csv
+import copy
 import hashlib
 import json
 import os
@@ -106,8 +107,20 @@ def make_runid(dataset: str, model_condition: str, strategy: str, repeat: int) -
 
 def build_conditions(experiment: dict[str, Any], models: list[dict[str, Any]]) -> list[Condition]:
     conditions = []
+    rate_limit_overrides = experiment.get("rate_limit_overrides", {})
+    if not isinstance(rate_limit_overrides, dict):
+        raise ValueError("rate_limit_overrides must be a mapping")
     for model_config in models:
         provider = model_config["provider"]
+        condition_id = model_config["condition_id"]
+        rate_limit = copy.deepcopy(model_config.get("rate_limit"))
+        override = rate_limit_overrides.get(condition_id)
+        if override is not None:
+            if rate_limit is None or not isinstance(override, dict):
+                raise ValueError(
+                    f"rate-limit override for {condition_id!r} requires a configured rate limit"
+                )
+            rate_limit.update(override)
         for strategy in experiment["strategies"]:
             if strategy not in STRATEGY_SLUGS:
                 raise ValueError(f"unsupported experiment strategy: {strategy}")
@@ -115,18 +128,18 @@ def build_conditions(experiment: dict[str, Any], models: list[dict[str, Any]]) -
                 conditions.append(
                     Condition(
                         dataset=experiment["dataset"],
-                        model_condition=model_config["condition_id"],
+                        model_condition=condition_id,
                         model=provider["model"],
                         provider=provider,
                         strategy=strategy,
                         repeat=int(repeat),
                         runid=make_runid(
                             experiment["dataset"],
-                            model_config["condition_id"],
+                            condition_id,
                             strategy,
                             int(repeat),
                         ),
-                        rate_limit=model_config.get("rate_limit"),
+                        rate_limit=rate_limit,
                     )
                 )
     return sorted(conditions, key=lambda condition: condition.runid)

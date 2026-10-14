@@ -72,7 +72,10 @@ def load_token_counts(path: Path) -> dict[tuple[str, str], int]:
         rows = list(csv.DictReader(source))
     counts: dict[tuple[str, str], int] = {}
     for row in rows:
-        key = (row["contract_id"], row["strategy"])
+        sample_id = row.get("contract_id") or row.get("scenario_id")
+        if not sample_id:
+            raise ValueError("token-count rows require contract_id or scenario_id")
+        key = (sample_id, row["strategy"])
         if key in counts:
             raise ValueError(
                 "duplicate token-count entry for " f"contract_id={key[0]!r}, strategy={key[1]!r}"

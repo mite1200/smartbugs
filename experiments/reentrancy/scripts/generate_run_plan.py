@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate a deterministic Aggregated Benchmark run plan."""
+"""Generate a deterministic reentrancy experiment run plan."""
 
 import argparse
 import json
@@ -48,6 +48,7 @@ def generate(repository_root: Path, experiment_config: Path, output: Path) -> di
                 "repeat": condition.repeat,
                 "runid": condition.runid,
                 "expected_observations": len(contracts),
+                "contract_ids": [contract.contract_id for contract in contracts],
             }
             for condition in conditions
         ],
