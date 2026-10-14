@@ -1,0 +1,696 @@
+{
+  "aggregated_exact_overlap": [],
+  "aggregated_overlap_hash_count": 0,
+  "aggregated_overlap_rsd_sample_count": 0,
+  "benchmark_commit": "d7c9496121931cff7c55b2047d18fb048fefe2cb",
+  "benchmark_repository": "https://github.com/ca-foscari-reentrancy-research-group/reentrancy-detection-llms.git",
+  "class_distribution": {
+    "Reentrant": 71,
+    "Safe": 72
+  },
+  "cross_label_duplicate_groups": [],
+  "dataset": "Reentrancy Scenarios Dataset",
+  "dataset_root": "benchmarks/RSD/src",
+  "declaration_count_distribution": {
+    "1": 103,
+    "2": 28,
+    "3": 6,
+    "5": 6
+  },
+  "documented_count_discrepancy": {
+    "pinned_source_count": 143,
+    "readme_counts_seen": [
+      150,
+      154
+    ],
+    "removed_source_count": 11,
+    "renamed_source_count": 2,
+    "stale_result_filename_count": 154
+  },
+  "duplicate_content_groups": [
+    {
+      "labels": [
+        "Safe"
+      ],
+      "scenario_ids": [
+        "benchmarks/RSD/src/04_CrossModFold_safe1.sol",
+        "benchmarks/RSD/src/04_CrossMod_safe3.sol"
+      ],
+      "sha256": "69ce7e2e8693c9e43b9a45bfdeb0192422cdebeb1c47808c46dac9a92a0e1269"
+    }
+  ],
+  "duplicate_extra_samples": 1,
+  "generation_timestamp": "2026-10-14T00:00:00+00:00",
+  "ground_truth_rule": "Terminal filename component _reeN -> Reentrant and _safeN -> Safe; this is the label encoding used by the pinned dataset and its per-file result tables",
+  "import_files": [],
+  "manifest_generation_method_version": "1",
+  "multi_declaration_files": [
+    {
+      "declarations": [
+        {
+          "kind": "interface",
+          "name": "SomeInterface"
+        },
+        {
+          "kind": "contract",
+          "name": "C"
+        }
+      ],
+      "scenario_id": "benchmarks/RSD/src/00_BasicInline_ree1.sol"
+    },
+    {
+      "declarations": [
+        {
+          "kind": "interface",
+          "name": "SomeInterface"
+        },
+        {
+          "kind": "contract",
+          "name": "C"
+        }
+      ],
+      "scenario_id": "benchmarks/RSD/src/00_BasicInline_safe1.sol"
+    },
+    {
+      "declarations": [
+        {
+          "kind": "interface",
+          "name": "IERC20"
+        },
+        {
+          "kind": "contract",
+          "name": "MyERC20"
+        },
+        {
+          "kind": "contract",
+          "name": "C"
+        }
+      ],
+      "scenario_id": "benchmarks/RSD/src/09_ERC20InheritMod_ree1.sol"
+    },
+    {
+      "declarations": [
+        {
+          "kind": "interface",
+          "name": "IERC20"
+        },
+        {
+          "kind": "contract",
+          "name": "MyERC20"
+        },
+        {
+          "kind": "contract",
+          "name": "C"
+        }
+      ],
+      "scenario_id": "benchmarks/RSD/src/09_ERC20InheritMod_ree2.sol"
+    },
+    {
+      "declarations": [
+        {
+          "kind": "interface",
+          "name": "IERC20"
+        },
+        {
+          "kind": "contract",
+          "name": "MyERC20"
+        },
+        {
+          "kind": "contract",
+          "name": "C"
+        }
+      ],
+      "scenario_id": "benchmarks/RSD/src/09_ERC20InheritMod_ree3.sol"
+    },
+    {
+      "declarations": [
+        {
+          "kind": "interface",
+          "name": "IERC20"
+        },
+        {
+          "kind": "contract",
+          "name": "MyERC20"
+        },
+        {
+          "kind": "contract",
+          "name": "C"
+        }
+      ],
+      "scenario_id": "benchmarks/RSD/src/09_ERC20InheritMod_safe1.sol"
+    },
+    {
+      "declarations": [
+        {
+          "kind": "interface",
+          "name": "IERC20"
+        },
+        {
+          "kind": "contract",
+          "name": "MyERC20"
+        },
+        {
+          "kind": "contract",
+          "name": "C"
+        }
+      ],
+      "scenario_id": "benchmarks/RSD/src/09_ERC20Inherit_ree1.sol"
+    },
+    {
+      "declarations": [
+        {
+          "kind": "interface",
+          "name": "IERC20"
+        },
+        {
+          "kind": "contract",
+          "name": "MyERC20"
+        },
+        {
+          "kind": "contract",
+          "name": "C"
+        }
+      ],
+      "scenario_id": "benchmarks/RSD/src/09_ERC20Inherit_safe1.sol"
+    },
+    {
+      "declarations": [
+        {
+          "kind": "interface",
+          "name": "IERC20"
+        },
+        {
+          "kind": "contract",
+          "name": "C"
+        }
+      ],
+      "scenario_id": "benchmarks/RSD/src/09_ERC20Mod_ree1.sol"
+    },
+    {
+      "declarations": [
+        {
+          "kind": "interface",
+          "name": "IERC20"
+        },
+        {
+          "kind": "contract",
+          "name": "C"
+        }
+      ],
+      "scenario_id": "benchmarks/RSD/src/09_ERC20Mod_ree2.sol"
+    },
+    {
+      "declarations": [
+        {
+          "kind": "interface",
+          "name": "IERC20"
+        },
+        {
+          "kind": "contract",
+          "name": "C"
+        }
+      ],
+      "scenario_id": "benchmarks/RSD/src/09_ERC20Mod_ree3.sol"
+    },
+    {
+      "declarations": [
+        {
+          "kind": "interface",
+          "name": "IERC20"
+        },
+        {
+          "kind": "contract",
+          "name": "C"
+        }
+      ],
+      "scenario_id": "benchmarks/RSD/src/09_ERC20Mod_safe1.sol"
+    },
+    {
+      "declarations": [
+        {
+          "kind": "interface",
+          "name": "IERC20"
+        },
+        {
+          "kind": "contract",
+          "name": "C"
+        }
+      ],
+      "scenario_id": "benchmarks/RSD/src/09_ERC20OnlyOnce_ree1.sol"
+    },
+    {
+      "declarations": [
+        {
+          "kind": "interface",
+          "name": "IERC20"
+        },
+        {
+          "kind": "contract",
+          "name": "C"
+        }
+      ],
+      "scenario_id": "benchmarks/RSD/src/09_ERC20OnlyOnce_safe1.sol"
+    },
+    {
+      "declarations": [
+        {
+          "kind": "interface",
+          "name": "IERC20"
+        },
+        {
+          "kind": "contract",
+          "name": "C"
+        }
+      ],
+      "scenario_id": "benchmarks/RSD/src/09_ERC20OnlyOnce_safe2.sol"
+    },
+    {
+      "declarations": [
+        {
+          "kind": "interface",
+          "name": "IERC20"
+        },
+        {
+          "kind": "contract",
+          "name": "StakableToken"
+        }
+      ],
+      "scenario_id": "benchmarks/RSD/src/09_ERC20StakingPullMod_ree1.sol"
+    },
+    {
+      "declarations": [
+        {
+          "kind": "interface",
+          "name": "IERC20"
+        },
+        {
+          "kind": "contract",
+          "name": "StakableToken"
+        }
+      ],
+      "scenario_id": "benchmarks/RSD/src/09_ERC20StakingPullMod_ree2.sol"
+    },
+    {
+      "declarations": [
+        {
+          "kind": "interface",
+          "name": "IERC20"
+        },
+        {
+          "kind": "contract",
+          "name": "StakableToken"
+        }
+      ],
+      "scenario_id": "benchmarks/RSD/src/09_ERC20StakingPullMod_safe1.sol"
+    },
+    {
+      "declarations": [
+        {
+          "kind": "interface",
+          "name": "IERC20"
+        },
+        {
+          "kind": "contract",
+          "name": "StakableToken"
+        }
+      ],
+      "scenario_id": "benchmarks/RSD/src/09_ERC20StakingPull_ree1.sol"
+    },
+    {
+      "declarations": [
+        {
+          "kind": "interface",
+          "name": "IERC20"
+        },
+        {
+          "kind": "contract",
+          "name": "StakableToken"
+        }
+      ],
+      "scenario_id": "benchmarks/RSD/src/09_ERC20StakingPull_safe1.sol"
+    },
+    {
+      "declarations": [
+        {
+          "kind": "interface",
+          "name": "IERC20"
+        },
+        {
+          "kind": "contract",
+          "name": "StakableToken"
+        }
+      ],
+      "scenario_id": "benchmarks/RSD/src/09_ERC20StakingPull_safe2.sol"
+    },
+    {
+      "declarations": [
+        {
+          "kind": "interface",
+          "name": "IERC20"
+        },
+        {
+          "kind": "contract",
+          "name": "StakableToken"
+        }
+      ],
+      "scenario_id": "benchmarks/RSD/src/09_ERC20Staking_ree1.sol"
+    },
+    {
+      "declarations": [
+        {
+          "kind": "interface",
+          "name": "IERC20"
+        },
+        {
+          "kind": "contract",
+          "name": "StakableToken"
+        }
+      ],
+      "scenario_id": "benchmarks/RSD/src/09_ERC20Staking_ree2.sol"
+    },
+    {
+      "declarations": [
+        {
+          "kind": "interface",
+          "name": "IERC20"
+        },
+        {
+          "kind": "contract",
+          "name": "StakableToken"
+        }
+      ],
+      "scenario_id": "benchmarks/RSD/src/09_ERC20Staking_ree3.sol"
+    },
+    {
+      "declarations": [
+        {
+          "kind": "interface",
+          "name": "IERC20"
+        },
+        {
+          "kind": "contract",
+          "name": "StakableToken"
+        }
+      ],
+      "scenario_id": "benchmarks/RSD/src/09_ERC20Staking_safe1.sol"
+    },
+    {
+      "declarations": [
+        {
+          "kind": "interface",
+          "name": "IERC20"
+        },
+        {
+          "kind": "contract",
+          "name": "StakableToken"
+        }
+      ],
+      "scenario_id": "benchmarks/RSD/src/09_ERC20Staking_safe2.sol"
+    },
+    {
+      "declarations": [
+        {
+          "kind": "interface",
+          "name": "IERC20"
+        },
+        {
+          "kind": "contract",
+          "name": "StakableToken"
+        }
+      ],
+      "scenario_id": "benchmarks/RSD/src/09_ERC20Staking_safe3.sol"
+    },
+    {
+      "declarations": [
+        {
+          "kind": "interface",
+          "name": "IERC20"
+        },
+        {
+          "kind": "contract",
+          "name": "MiniToken"
+        }
+      ],
+      "scenario_id": "benchmarks/RSD/src/09_ERC20Staticcall_ree1.sol"
+    },
+    {
+      "declarations": [
+        {
+          "kind": "interface",
+          "name": "IERC20"
+        },
+        {
+          "kind": "contract",
+          "name": "MiniToken"
+        }
+      ],
+      "scenario_id": "benchmarks/RSD/src/09_ERC20_ree1.sol"
+    },
+    {
+      "declarations": [
+        {
+          "kind": "interface",
+          "name": "IERC20"
+        },
+        {
+          "kind": "contract",
+          "name": "C"
+        }
+      ],
+      "scenario_id": "benchmarks/RSD/src/09_ERC20_ree2.sol"
+    },
+    {
+      "declarations": [
+        {
+          "kind": "interface",
+          "name": "IERC20"
+        },
+        {
+          "kind": "contract",
+          "name": "MiniToken"
+        }
+      ],
+      "scenario_id": "benchmarks/RSD/src/09_ERC20_safe1.sol"
+    },
+    {
+      "declarations": [
+        {
+          "kind": "interface",
+          "name": "IERC20"
+        },
+        {
+          "kind": "contract",
+          "name": "MiniToken"
+        }
+      ],
+      "scenario_id": "benchmarks/RSD/src/09_ERC20_safe2.sol"
+    },
+    {
+      "declarations": [
+        {
+          "kind": "interface",
+          "name": "IERC20"
+        },
+        {
+          "kind": "contract",
+          "name": "C"
+        }
+      ],
+      "scenario_id": "benchmarks/RSD/src/09_ERC20_safe3.sol"
+    },
+    {
+      "declarations": [
+        {
+          "kind": "interface",
+          "name": "IERC20"
+        },
+        {
+          "kind": "contract",
+          "name": "C"
+        }
+      ],
+      "scenario_id": "benchmarks/RSD/src/09_ERC20_safe4.sol"
+    },
+    {
+      "declarations": [
+        {
+          "kind": "interface",
+          "name": "IAlpha"
+        },
+        {
+          "kind": "interface",
+          "name": "IStrategy"
+        },
+        {
+          "kind": "interface",
+          "name": "IRari"
+        },
+        {
+          "kind": "contract",
+          "name": "A"
+        },
+        {
+          "kind": "contract",
+          "name": "B"
+        }
+      ],
+      "scenario_id": "benchmarks/RSD/src/14_ReadOnly_safe1.sol"
+    },
+    {
+      "declarations": [
+        {
+          "kind": "interface",
+          "name": "IAlpha"
+        },
+        {
+          "kind": "interface",
+          "name": "IStrategy"
+        },
+        {
+          "kind": "interface",
+          "name": "IRari"
+        },
+        {
+          "kind": "contract",
+          "name": "A"
+        },
+        {
+          "kind": "contract",
+          "name": "B"
+        }
+      ],
+      "scenario_id": "benchmarks/RSD/src/15_ReadOnlyStaticcall_ree1.sol"
+    },
+    {
+      "declarations": [
+        {
+          "kind": "interface",
+          "name": "IAlpha"
+        },
+        {
+          "kind": "interface",
+          "name": "IStrategy"
+        },
+        {
+          "kind": "interface",
+          "name": "IRari"
+        },
+        {
+          "kind": "contract",
+          "name": "A"
+        },
+        {
+          "kind": "contract",
+          "name": "B"
+        }
+      ],
+      "scenario_id": "benchmarks/RSD/src/15_ReadOnlyStaticcall_safe1.sol"
+    },
+    {
+      "declarations": [
+        {
+          "kind": "interface",
+          "name": "IAlpha"
+        },
+        {
+          "kind": "interface",
+          "name": "IStrategy"
+        },
+        {
+          "kind": "interface",
+          "name": "IRari"
+        },
+        {
+          "kind": "contract",
+          "name": "A"
+        },
+        {
+          "kind": "contract",
+          "name": "B"
+        }
+      ],
+      "scenario_id": "benchmarks/RSD/src/15_ReadOnly_ree1.sol"
+    },
+    {
+      "declarations": [
+        {
+          "kind": "interface",
+          "name": "IAlpha"
+        },
+        {
+          "kind": "interface",
+          "name": "IStrategy"
+        },
+        {
+          "kind": "interface",
+          "name": "IRari"
+        },
+        {
+          "kind": "contract",
+          "name": "A"
+        },
+        {
+          "kind": "contract",
+          "name": "B"
+        }
+      ],
+      "scenario_id": "benchmarks/RSD/src/15_ReadOnly_ree2.sol"
+    },
+    {
+      "declarations": [
+        {
+          "kind": "interface",
+          "name": "IAlpha"
+        },
+        {
+          "kind": "interface",
+          "name": "IStrategy"
+        },
+        {
+          "kind": "interface",
+          "name": "IRari"
+        },
+        {
+          "kind": "contract",
+          "name": "A"
+        },
+        {
+          "kind": "contract",
+          "name": "B"
+        }
+      ],
+      "scenario_id": "benchmarks/RSD/src/15_ReadOnly_safe2.sol"
+    }
+  ],
+  "multiple_pragma_files": [],
+  "other_label_count": 0,
+  "reentrant_count": 71,
+  "safe_count": 72,
+  "sample_unit": "One Solidity source file in benchmarks/RSD/src; each file is one labeled scenario and may contain multiple contract/interface declarations",
+  "scenario_category_distribution": {
+    "00": 21,
+    "01": 10,
+    "02": 8,
+    "03": 13,
+    "04": 13,
+    "05": 6,
+    "06": 4,
+    "07": 6,
+    "08": 4,
+    "09": 32,
+    "10": 2,
+    "11": 3,
+    "12": 2,
+    "13": 9,
+    "14": 5,
+    "15": 5
+  },
+  "scenario_id_rule": "POSIX-normalized path relative to the benchmark repository root; scenario_id, contract_id, and contract_path are equal",
+  "scenario_metadata_rule": "scenario_category is the leading two-digit filename component; scenario_name and scenario_variant preserve the remaining filename components without semantic inference",
+  "solidity_version_distribution": {
+    "0.8": 143
+  },
+  "solidity_version_rule": "Major.minor family extracted from all Solidity pragma directives; all directives must agree, otherwise 'multiple'; '(no pragma)' when absent",
+  "total_samples": 143,
+  "unique_byte_contents": 142
+}

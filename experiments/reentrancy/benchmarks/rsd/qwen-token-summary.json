@@ -1,0 +1,65 @@
+{
+  "absolute_context_limit": 65536,
+  "benchmark_commit": "d7c9496121931cff7c55b2047d18fb048fefe2cb",
+  "chat_template_parameters": {
+    "add_generation_prompt": true,
+    "messages": "one user message containing the exact rendered analyzer prompt",
+    "reasoning_effort": "medium"
+  },
+  "conservative_input_threshold": 49152,
+  "count_type": "chat-templated input tokens",
+  "manifest": "/home/michael/dev/diplomarbeit/smartbugs-forked/smartbugs-rsd-prep/experiments/reentrancy/benchmarks/rsd/rsd.csv",
+  "model_id": "Qwen/Qwen3.8-27B",
+  "model_revision": "1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0",
+  "prompt_count": 572,
+  "sample_count": 143,
+  "strategy_count": 4,
+  "strategy_distributions": {
+    "few_shot": {
+      "at_or_above_absolute_context_limit": 0,
+      "at_or_above_conservative_threshold": 0,
+      "max": 3364,
+      "mean": 2483.853146853147,
+      "median": 2384,
+      "min": 2227,
+      "p95": 3174,
+      "sample_count": 143,
+      "total_input_tokens": 355191
+    },
+    "structured_reasoning": {
+      "at_or_above_absolute_context_limit": 0,
+      "at_or_above_conservative_threshold": 0,
+      "max": 2044,
+      "mean": 1163.8531468531469,
+      "median": 1064,
+      "min": 907,
+      "p95": 1854,
+      "sample_count": 143,
+      "total_input_tokens": 166431
+    },
+    "structured_reasoning_few_shot": {
+      "at_or_above_absolute_context_limit": 0,
+      "at_or_above_conservative_threshold": 0,
+      "max": 3639,
+      "mean": 2758.853146853147,
+      "median": 2659,
+      "min": 2502,
+      "p95": 3449,
+      "sample_count": 143,
+      "total_input_tokens": 394516
+    },
+    "zero_shot": {
+      "at_or_above_absolute_context_limit": 0,
+      "at_or_above_conservative_threshold": 0,
+      "max": 1769,
+      "mean": 888.8531468531469,
+      "median": 789,
+      "min": 632,
+      "p95": 1579,
+      "sample_count": 143,
+      "total_input_tokens": 127106
+    }
+  },
+  "tokenizer_class": "Qwen3_5Tokenizer",
+  "tokenizer_model_max_length": 262144
+}
