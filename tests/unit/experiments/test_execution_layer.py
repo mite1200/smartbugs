@@ -1,4 +1,5 @@
 import csv
+import hashlib
 import importlib.util
 import json
 from pathlib import Path
@@ -37,6 +38,13 @@ def configured_matrix():
     return experiment, build_conditions(experiment, models)
 
 
+def configured_extension_matrix():
+    config_root = ROOT / "experiments/reentrancy/configs"
+    experiment = load_yaml(config_root / "combined-v1.yaml")
+    models = load_model_configs(config_root / "models")
+    return experiment, build_conditions(experiment, models)
+
+
 def test_plan_has_27_deterministic_conditions_and_11664_observations():
     experiment, first = configured_matrix()
     _, second = configured_matrix()
@@ -56,6 +64,55 @@ def test_active_main_model_conditions_exclude_historical_gemini():
     identifiers = {condition.model_condition for condition in conditions}
     assert identifiers == {"gpt-6-luna", "grok-4.3", "qwen3.8-27b-cerebras"}
     assert "gemini-3.8-flash" not in identifiers
+
+
+def test_extension_plan_has_only_nine_combined_strategy_conditions():
+    experiment, conditions = configured_extension_matrix()
+    assert experiment["experiment_id"] == "reentrancy-aggregated-combined-v1"
+    assert experiment["results_root"] == "experiments/reentrancy/runs/combined-v1/results"
+    assert experiment["logs_root"] == "experiments/reentrancy/runs/combined-v1/logs"
+    assert len(conditions) == 9
+    assert len(conditions) * 432 == 3888
+    assert {condition.strategy for condition in conditions} == {"structured_reasoning_few_shot"}
+    assert {condition.model_condition for condition in conditions} == {
+        "gpt-6-luna",
+        "grok-4.3",
+        "qwen3.8-27b-cerebras",
+    }
+    assert {condition.repeat for condition in conditions} == {1, 2, 3}
+    assert len({condition.runid for condition in conditions}) == 9
+    assert (
+        make_runid("aggregated", "grok-4.3", "structured_reasoning_few_shot", 1)
+        == "aggregated__grok-4.3__structured-reasoning-few-shot__r1"
+    )
+
+
+def test_extension_plan_artifact_is_separate_and_complete():
+    plan = json.loads(
+        (ROOT / "experiments/reentrancy/runs/combined-plan.json").read_text(encoding="utf-8")
+    )
+    assert plan["experiment_id"] == "reentrancy-aggregated-combined-v1"
+    assert plan["condition_count"] == 9
+    assert plan["contract_count"] == 432
+    assert plan["expected_observations"] == 3888
+    assert plan["results_root"] == "experiments/reentrancy/runs/combined-v1/results"
+    assert plan["logs_root"] == "experiments/reentrancy/runs/combined-v1/logs"
+    assert {condition["strategy"] for condition in plan["conditions"]} == {
+        "structured_reasoning_few_shot"
+    }
+
+
+def test_main_v2_config_and_plan_artifacts_are_unchanged():
+    expected = {
+        "experiments/reentrancy/configs/experiment.yaml": (
+            "1e36c08b8df42788d4e274e95cbf7598f38181605eea57c483c405465deda069"
+        ),
+        "experiments/reentrancy/runs/aggregated-plan.json": (
+            "ac6192c57e6339ad75d4b4ed7f9a956cfcdaddd2c8d5e1a3e92032a040aa872e"
+        ),
+    }
+    for relative_path, expected_hash in expected.items():
+        assert hashlib.sha256((ROOT / relative_path).read_bytes()).hexdigest() == expected_hash
 
 
 def test_grok_configuration_uses_responses_and_store_false():

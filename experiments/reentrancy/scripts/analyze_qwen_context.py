@@ -22,7 +22,12 @@ from sb.llm.profiles import load_profile  # noqa: E402
 MODEL_ID = "Qwen/Qwen3.8-27B"
 MODEL_REVISION = "1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0"
 REASONING_EFFORT = "medium"
-STRATEGIES = ("zero_shot", "structured_reasoning", "few_shot")
+STRATEGIES = (
+    "zero_shot",
+    "structured_reasoning",
+    "few_shot",
+    "structured_reasoning_few_shot",
+)
 ABSOLUTE_CONTEXT_LIMIT = 65_536
 RESERVED_OUTPUT_TOKENS = 16_384
 CONSERVATIVE_INPUT_LIMIT = ABSOLUTE_CONTEXT_LIMIT - RESERVED_OUTPUT_TOKENS

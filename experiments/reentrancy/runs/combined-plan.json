@@ -1,0 +1,106 @@
+{
+  "analyzer_tag": "thesis-llm-analyzer-v1",
+  "benchmark_commit": "d7c9496121931cff7c55b2047d18fb048fefe2cb",
+  "condition_count": 9,
+  "conditions": [
+    {
+      "dataset": "aggregated",
+      "expected_observations": 432,
+      "model": "gpt-6-luna",
+      "model_condition": "gpt-6-luna",
+      "provider": "openai",
+      "repeat": 1,
+      "runid": "aggregated__gpt-6-luna__structured-reasoning-few-shot__r1",
+      "strategy": "structured_reasoning_few_shot"
+    },
+    {
+      "dataset": "aggregated",
+      "expected_observations": 432,
+      "model": "gpt-6-luna",
+      "model_condition": "gpt-6-luna",
+      "provider": "openai",
+      "repeat": 2,
+      "runid": "aggregated__gpt-6-luna__structured-reasoning-few-shot__r2",
+      "strategy": "structured_reasoning_few_shot"
+    },
+    {
+      "dataset": "aggregated",
+      "expected_observations": 432,
+      "model": "gpt-6-luna",
+      "model_condition": "gpt-6-luna",
+      "provider": "openai",
+      "repeat": 3,
+      "runid": "aggregated__gpt-6-luna__structured-reasoning-few-shot__r3",
+      "strategy": "structured_reasoning_few_shot"
+    },
+    {
+      "dataset": "aggregated",
+      "expected_observations": 432,
+      "model": "grok-4.3",
+      "model_condition": "grok-4.3",
+      "provider": "openai_compatible",
+      "repeat": 1,
+      "runid": "aggregated__grok-4.3__structured-reasoning-few-shot__r1",
+      "strategy": "structured_reasoning_few_shot"
+    },
+    {
+      "dataset": "aggregated",
+      "expected_observations": 432,
+      "model": "grok-4.3",
+      "model_condition": "grok-4.3",
+      "provider": "openai_compatible",
+      "repeat": 2,
+      "runid": "aggregated__grok-4.3__structured-reasoning-few-shot__r2",
+      "strategy": "structured_reasoning_few_shot"
+    },
+    {
+      "dataset": "aggregated",
+      "expected_observations": 432,
+      "model": "grok-4.3",
+      "model_condition": "grok-4.3",
+      "provider": "openai_compatible",
+      "repeat": 3,
+      "runid": "aggregated__grok-4.3__structured-reasoning-few-shot__r3",
+      "strategy": "structured_reasoning_few_shot"
+    },
+    {
+      "dataset": "aggregated",
+      "expected_observations": 432,
+      "model": "qwen-3.8-27b",
+      "model_condition": "qwen3.8-27b-cerebras",
+      "provider": "openai_compatible",
+      "repeat": 1,
+      "runid": "aggregated__qwen3.8-27b-cerebras__structured-reasoning-few-shot__r1",
+      "strategy": "structured_reasoning_few_shot"
+    },
+    {
+      "dataset": "aggregated",
+      "expected_observations": 432,
+      "model": "qwen-3.8-27b",
+      "model_condition": "qwen3.8-27b-cerebras",
+      "provider": "openai_compatible",
+      "repeat": 2,
+      "runid": "aggregated__qwen3.8-27b-cerebras__structured-reasoning-few-shot__r2",
+      "strategy": "structured_reasoning_few_shot"
+    },
+    {
+      "dataset": "aggregated",
+      "expected_observations": 432,
+      "model": "qwen-3.8-27b",
+      "model_condition": "qwen3.8-27b-cerebras",
+      "provider": "openai_compatible",
+      "repeat": 3,
+      "runid": "aggregated__qwen3.8-27b-cerebras__structured-reasoning-few-shot__r3",
+      "strategy": "structured_reasoning_few_shot"
+    }
+  ],
+  "contract_count": 432,
+  "dataset": "aggregated",
+  "dataset_name": "Aggregated Benchmark",
+  "expected_observations": 3888,
+  "experiment_id": "reentrancy-aggregated-combined-v1",
+  "logs_root": "experiments/reentrancy/runs/combined-v1/logs",
+  "manifest": "experiments/reentrancy/manifests/aggregated.csv",
+  "manifest_sha256": "189bd23ae4501b494cb07e309341fdec13b2fa695dda6eb1d0d3ecef9d043867",
+  "results_root": "experiments/reentrancy/runs/combined-v1/results"
+}

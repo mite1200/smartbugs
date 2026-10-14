@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate the deterministic 27-condition Aggregated Benchmark run plan."""
+"""Generate a deterministic Aggregated Benchmark run plan."""
 
 import argparse
 import json
@@ -19,9 +19,9 @@ from experiments.reentrancy.execution import (  # noqa: E402
 )
 
 
-def generate(repository_root: Path, output: Path) -> dict:
+def generate(repository_root: Path, experiment_config: Path, output: Path) -> dict:
     config_root = repository_root / "experiments/reentrancy/configs"
-    experiment = load_yaml(config_root / "experiment.yaml")
+    experiment = load_yaml(experiment_config)
     manifest_path = repository_root / experiment["manifest"]
     contracts = load_manifest(manifest_path)
     conditions = build_conditions(experiment, load_model_configs(config_root / "models"))
@@ -33,6 +33,8 @@ def generate(repository_root: Path, output: Path) -> dict:
         "analyzer_tag": experiment["analyzer_tag"],
         "manifest": experiment["manifest"],
         "manifest_sha256": manifest_sha256(manifest_path),
+        "results_root": experiment["results_root"],
+        "logs_root": experiment["logs_root"],
         "contract_count": len(contracts),
         "condition_count": len(conditions),
         "expected_observations": len(contracts) * len(conditions),
@@ -59,12 +61,21 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--repository-root", type=Path, default=Path.cwd())
     parser.add_argument(
+        "--experiment-config",
+        type=Path,
+        default=Path("experiments/reentrancy/configs/experiment.yaml"),
+    )
+    parser.add_argument(
         "--output",
         type=Path,
         default=Path("experiments/reentrancy/runs/aggregated-plan.json"),
     )
     args = parser.parse_args()
-    generate(args.repository_root.resolve(), args.output.resolve())
+    generate(
+        args.repository_root.resolve(),
+        args.experiment_config.resolve(),
+        args.output.resolve(),
+    )
 
 
 if __name__ == "__main__":

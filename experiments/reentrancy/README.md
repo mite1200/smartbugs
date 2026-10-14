@@ -27,7 +27,8 @@ are marked `unspecified`.
 
 ## Experiment execution
 
-The frozen analyzer tag is `thesis-llm-analyzer-v1`. The deterministic plan is:
+The frozen analyzer tag is `thesis-llm-analyzer-v1`. The completed primary
+experiment is `reentrancy-aggregated-main-v2`; its deterministic plan is:
 
 ```console
 python experiments/reentrancy/scripts/generate_run_plan.py
@@ -35,6 +36,21 @@ python experiments/reentrancy/scripts/generate_run_plan.py
 
 It contains 27 model/strategy/repeat conditions and 11,664 expected Aggregated
 Benchmark observations.
+
+The pre-planned optional `structured_reasoning_few_shot` extension uses the
+separate `reentrancy-aggregated-combined-v1` namespace. It combines the already
+frozen structured-reasoning instructions with the same four frozen few-shot
+examples, without modifying any main-v2 observation. Generate its separate plan
+with:
+
+```console
+python experiments/reentrancy/scripts/generate_run_plan.py \
+  --experiment-config experiments/reentrancy/configs/combined-v1.yaml \
+  --output experiments/reentrancy/runs/combined-plan.json
+```
+
+The extension contains 3 models x 3 repeats x 432 contracts = 3,888 planned
+observations under `runs/combined-v1/`.
 
 The active main model conditions are:
 
@@ -130,7 +146,7 @@ and `reasoning_effort=medium`. It writes per-prompt counts and a summary under
 ### Cerebras rate-limit pacing
 
 The Qwen Cerebras model configuration enables experiment-layer pacing with a
-60-second window, at most 120,000 exact uncached/input tokens and at most 32
+60-second window, at most 80,000 exact uncached/input tokens and at most 16
 requests per window. Token counts are read from the generated context-analysis
 CSV by exact `(contract_id, strategy)` key; prompts are never reconstructed for
 pacing.

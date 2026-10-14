@@ -17,6 +17,7 @@ STRATEGY_SLUGS = {
     "zero_shot": "zero-shot",
     "structured_reasoning": "structured-reasoning",
     "few_shot": "few-shot",
+    "structured_reasoning_few_shot": "structured-reasoning-few-shot",
 }
 PROTECTED_PATHS = (
     "sb/llm",

@@ -142,6 +142,7 @@ def build_pacing_windows(
 def plan_condition(
     repository_root: Path,
     benchmark_root: Path,
+    experiment_config: Path,
     model_condition: str,
     strategy: str,
     repeat: int,
@@ -149,7 +150,7 @@ def plan_condition(
     contract_id: str | None = None,
 ) -> tuple[dict, Condition, list, list, list]:
     config_root = repository_root / "experiments/reentrancy/configs"
-    experiment = load_yaml(config_root / "experiment.yaml")
+    experiment = load_yaml(experiment_config)
     contracts = load_manifest(repository_root / experiment["manifest"])
     contracts = select_contracts(contracts, limit, contract_id)
     verify_benchmark(benchmark_root, experiment, contracts)
@@ -331,6 +332,11 @@ def main() -> None:
     selection.add_argument("--contract-id")
     parser.add_argument("--execute", action="store_true")
     parser.add_argument("--repository-root", type=Path, default=Path.cwd())
+    parser.add_argument(
+        "--experiment-config",
+        type=Path,
+        default=Path("experiments/reentrancy/configs/experiment.yaml"),
+    )
     args = parser.parse_args()
 
     repository_root = args.repository_root.resolve()
@@ -338,6 +344,7 @@ def main() -> None:
     experiment, condition, completed, missing, conflicts = plan_condition(
         repository_root,
         benchmark_root,
+        args.experiment_config.resolve(),
         args.model_condition,
         args.strategy,
         args.repeat,
@@ -363,6 +370,7 @@ def main() -> None:
         experiment, condition, completed, missing, conflicts = plan_condition(
             repository_root,
             benchmark_root,
+            args.experiment_config.resolve(),
             args.model_condition,
             args.strategy,
             args.repeat,

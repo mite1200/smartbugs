@@ -11,6 +11,11 @@
   "largest_prompts": [
     {
       "contract_id": "benchmarks/aggregated-benchmark/src/safe/0xa52e014b3f5cc48287c2d483a3e026c32cc76e6d.sol",
+      "input_tokens": 48067,
+      "strategy": "structured_reasoning_few_shot"
+    },
+    {
+      "contract_id": "benchmarks/aggregated-benchmark/src/safe/0xa52e014b3f5cc48287c2d483a3e026c32cc76e6d.sol",
       "input_tokens": 47792,
       "strategy": "few_shot"
     },
@@ -23,6 +28,11 @@
       "contract_id": "benchmarks/aggregated-benchmark/src/safe/0xa52e014b3f5cc48287c2d483a3e026c32cc76e6d.sol",
       "input_tokens": 46197,
       "strategy": "zero_shot"
+    },
+    {
+      "contract_id": "benchmarks/aggregated-benchmark/src/safe/0x607bad7a2969019ade64cb1b74f60fffa20cc3e5.sol",
+      "input_tokens": 43341,
+      "strategy": "structured_reasoning_few_shot"
     },
     {
       "contract_id": "benchmarks/aggregated-benchmark/src/safe/0x607bad7a2969019ade64cb1b74f60fffa20cc3e5.sol",
@@ -41,33 +51,23 @@
     },
     {
       "contract_id": "benchmarks/aggregated-benchmark/src/safe/0xf122b5793980d865bcbfd59c641ff60a460523d3.sol",
-      "input_tokens": 40234,
-      "strategy": "few_shot"
+      "input_tokens": 40509,
+      "strategy": "structured_reasoning_few_shot"
     },
     {
       "contract_id": "benchmarks/aggregated-benchmark/src/safe/0xf122b5793980d865bcbfd59c641ff60a460523d3.sol",
-      "input_tokens": 38914,
-      "strategy": "structured_reasoning"
-    },
-    {
-      "contract_id": "benchmarks/aggregated-benchmark/src/reentrant/0x0a3ed956f14d3c725f2a04117e2f25b12dd3dec3.sol",
-      "input_tokens": 38687,
-      "strategy": "few_shot"
-    },
-    {
-      "contract_id": "benchmarks/aggregated-benchmark/src/safe/0x0b5da756938e334c97ce20715e32a4a8fea12ba9.sol",
-      "input_tokens": 38671,
+      "input_tokens": 40234,
       "strategy": "few_shot"
     }
   ],
-  "maximum_input_tokens": 47792,
+  "maximum_input_tokens": 48067,
   "model_id": "Qwen/Qwen3.8-27B",
   "model_revision": "1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0",
-  "prompt_count": 1296,
+  "prompt_count": 1728,
   "prompts_at_or_above_absolute_context_limit": 0,
   "prompts_exceeding_conservative_input_limit": 0,
   "reserved_output_tokens": 16384,
-  "strategy_count": 3,
+  "strategy_count": 4,
   "strategy_distributions": {
     "few_shot": {
       "max": 47792,
@@ -85,6 +85,14 @@
       "p95": 9181,
       "p99": 37351
     },
+    "structured_reasoning_few_shot": {
+      "max": 48067,
+      "min": 2442,
+      "p50": 4032,
+      "p90": 7809,
+      "p95": 10776,
+      "p99": 38946
+    },
     "zero_shot": {
       "max": 46197,
       "min": 572,
@@ -96,6 +104,6 @@
   },
   "tokenizer_class": "Qwen3_5Tokenizer",
   "tokenizer_model_max_length": 262144,
-  "worst_case_absolute_headroom": 17744,
-  "worst_case_reserved_output_headroom": 1360
+  "worst_case_absolute_headroom": 17469,
+  "worst_case_reserved_output_headroom": 1085
 }

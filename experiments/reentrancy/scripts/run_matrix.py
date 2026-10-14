@@ -24,10 +24,16 @@ def main() -> None:
     parser.add_argument("--processes", type=int, default=1)
     parser.add_argument("--limit-contracts", type=int)
     parser.add_argument("--repository-root", type=Path, default=Path.cwd())
+    parser.add_argument(
+        "--experiment-config",
+        type=Path,
+        default=Path("experiments/reentrancy/configs/experiment.yaml"),
+    )
     args = parser.parse_args()
     repository_root = args.repository_root.resolve()
     config_root = repository_root / "experiments/reentrancy/configs"
-    experiment = load_yaml(config_root / "experiment.yaml")
+    experiment_config = args.experiment_config.resolve()
+    experiment = load_yaml(experiment_config)
     conditions = build_conditions(experiment, load_model_configs(config_root / "models"))
     runner = repository_root / "experiments/reentrancy/scripts/run_experiment.py"
     for condition in conditions:
@@ -37,6 +43,8 @@ def main() -> None:
             str(args.benchmark_root.resolve()),
             "--repository-root",
             str(repository_root),
+            "--experiment-config",
+            str(experiment_config),
             "--model-condition",
             condition.model_condition,
             "--strategy",
