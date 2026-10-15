@@ -118,7 +118,8 @@ Results retain the native SmartBugs tree under:
 experiments/reentrancy/runs/results/<runid>/<benchmark-relative-contract-path>/
 ```
 
-Collect the raw per-inference table and coverage report with:
+The legacy single-experiment collector can collect the primary Aggregated raw
+per-inference table with:
 
 ```console
 python experiments/reentrancy/scripts/collect_predictions.py
@@ -126,6 +127,68 @@ python experiments/reentrancy/scripts/collect_predictions.py
 
 This writes `evaluation/predictions.csv` and `evaluation/coverage.json`. It does
 not perform majority voting or calculate evaluation metrics.
+
+## Reproducible thesis evaluation
+
+Regenerate every derived LLM evaluation artifact from the completed raw
+`llm-provenance.json` files with one command:
+
+```console
+.venv/bin/python experiments/reentrancy/scripts/run_evaluation.py
+```
+
+The command reads these raw result roots without modifying them:
+
+- `experiments/reentrancy/runs/main-v2/results`
+- `experiments/reentrancy/runs/combined-v1/results`
+- `experiments/reentrancy/runs/rsd-v1/results`
+
+The two Aggregated namespaces are merged into one logical four-strategy dataset,
+while each observation retains its original `experiment_id`. RSD remains a
+separate benchmark. Generated outputs are written below:
+
+```text
+experiments/reentrancy/evaluation/
+  aggregated/
+  rsd/
+  combined/
+```
+
+Each benchmark directory contains raw prediction collection and coverage,
+strict majority votes and metrics, stability, terminal-status summaries,
+available-consensus sensitivity results, matched-subset metrics, and prompt
+deltas. `combined/` contains compact cross-benchmark primary metric and coverage
+tables; Aggregated and RSD scores are not averaged together.
+
+### Primary rule
+
+The pre-defined primary analysis requires exactly three valid binary outputs for
+each dataset/model/strategy/sample aggregate. A 3/3 unanimous vote and a 2/1
+split both produce a majority classification. Fewer than three valid binary
+outputs make the sample incomplete for primary metrics.
+
+A binary output is valid only when there is no technical error,
+`parsed_result.status` is `completed`, `classification_valid` is true, and the
+classification normalizes by whitespace and case only to `Reentrant` or `Safe`.
+`schema_valid` is reported separately and is not required for primary binary
+classification.
+
+### Secondary available-consensus rule
+
+The explicitly secondary sensitivity analysis accepts the normal majority when
+three binary outputs are valid. With exactly two valid outputs, it accepts an
+aggregate only when both agree. A 1/1 disagreement or fewer than two valid
+outputs produces no aggregate. This sensitivity analysis does not replace the
+strict primary evaluation.
+
+Matched sensitivity outputs use available-consensus aggregates:
+
+- within-model: intersection available for every strategy of one model;
+- cross-model: intersection available for every model under one strategy;
+- fully matched: intersection available for every model/strategy combination.
+
+Prompt deltas compare each strategy with zero-shot on the corresponding
+within-model matched subset.
 
 ## Qwen Cerebras context analysis
 

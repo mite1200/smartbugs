@@ -1,0 +1,48 @@
+{
+  "binary_valid_observations": 15449,
+  "classification_valid_observations": 15449,
+  "dataset": "aggregated",
+  "duplicate_inference_ids": 0,
+  "duplicate_observation_keys": 0,
+  "expected_observations": 15552,
+  "experiment_ids": [
+    "reentrancy-aggregated-combined-v1",
+    "reentrancy-aggregated-main-v2"
+  ],
+  "experiments": [
+    {
+      "condition_count": 9,
+      "dataset": "aggregated",
+      "expected_observations": 3888,
+      "experiment_id": "reentrancy-aggregated-combined-v1",
+      "manifest": "experiments/reentrancy/manifests/aggregated.csv",
+      "results_root": "experiments/reentrancy/runs/combined-v1/results",
+      "sample_count": 432,
+      "terminal_status_counts": {
+        "completed": 3874,
+        "invalid_output": 10,
+        "technical_error": 4
+      }
+    },
+    {
+      "condition_count": 27,
+      "dataset": "aggregated",
+      "expected_observations": 11664,
+      "experiment_id": "reentrancy-aggregated-main-v2",
+      "manifest": "experiments/reentrancy/manifests/aggregated.csv",
+      "results_root": "experiments/reentrancy/runs/main-v2/results",
+      "sample_count": 432,
+      "terminal_status_counts": {
+        "completed": 11575,
+        "invalid_output": 72,
+        "technical_error": 17
+      }
+    }
+  ],
+  "schema_valid_observations": 14684,
+  "terminal_status_counts": {
+    "completed": 15449,
+    "invalid_output": 82,
+    "technical_error": 21
+  }
+}

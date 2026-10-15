@@ -1,0 +1,13 @@
+dataset,model_condition,prompt_strategy,complete_samples,unanimous_3_of_3,split_2_of_3,unanimous_percentage,positive_votes_0_of_3,positive_votes_1_of_3,positive_votes_2_of_3,positive_votes_3_of_3
+aggregated,gpt-6-luna,few_shot,427,405,22,0.9484777517564403,311,18,4,94
+aggregated,gpt-6-luna,structured_reasoning,431,413,18,0.9582366589327146,318,10,8,95
+aggregated,gpt-6-luna,structured_reasoning_few_shot,429,403,26,0.9393939393939394,312,14,12,91
+aggregated,gpt-6-luna,zero_shot,429,414,15,0.965034965034965,320,9,6,94
+aggregated,grok-4.3,few_shot,429,409,20,0.9533799533799534,303,12,8,106
+aggregated,grok-4.3,structured_reasoning,427,406,21,0.9508196721311475,303,14,7,103
+aggregated,grok-4.3,structured_reasoning_few_shot,429,412,17,0.9603729603729604,301,14,3,111
+aggregated,grok-4.3,zero_shot,423,400,23,0.9456264775413712,293,15,8,107
+aggregated,qwen3.8-27b-cerebras,few_shot,425,412,13,0.9694117647058823,320,5,8,92
+aggregated,qwen3.8-27b-cerebras,structured_reasoning,411,387,24,0.9416058394160584,307,11,13,80
+aggregated,qwen3.8-27b-cerebras,structured_reasoning_few_shot,425,404,21,0.9505882352941176,319,9,12,85
+aggregated,qwen3.8-27b-cerebras,zero_shot,403,378,25,0.9379652605459057,295,8,17,83

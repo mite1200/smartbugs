@@ -1,0 +1,33 @@
+{
+  "binary_valid_observations": 5082,
+  "classification_valid_observations": 5082,
+  "dataset": "rsd",
+  "duplicate_inference_ids": 0,
+  "duplicate_observation_keys": 0,
+  "expected_observations": 5148,
+  "experiment_ids": [
+    "reentrancy-rsd-main-v1"
+  ],
+  "experiments": [
+    {
+      "condition_count": 36,
+      "dataset": "rsd",
+      "expected_observations": 5148,
+      "experiment_id": "reentrancy-rsd-main-v1",
+      "manifest": "experiments/reentrancy/benchmarks/rsd/rsd.csv",
+      "results_root": "experiments/reentrancy/runs/rsd-v1/results",
+      "sample_count": 143,
+      "terminal_status_counts": {
+        "completed": 5082,
+        "invalid_output": 63,
+        "technical_error": 3
+      }
+    }
+  ],
+  "schema_valid_observations": 4799,
+  "terminal_status_counts": {
+    "completed": 5082,
+    "invalid_output": 63,
+    "technical_error": 3
+  }
+}

@@ -1,0 +1,13 @@
+dataset,model_condition,prompt_strategy,expected_samples,aggregate_samples,coverage,from_3_valid_runs,from_2_valid_agreement,rejected_samples
+rsd,gpt-6-luna,few_shot,143,143,1.0,143,0,0
+rsd,gpt-6-luna,structured_reasoning,143,143,1.0,142,1,0
+rsd,gpt-6-luna,structured_reasoning_few_shot,143,143,1.0,143,0,0
+rsd,gpt-6-luna,zero_shot,143,143,1.0,143,0,0
+rsd,grok-4.3,few_shot,143,143,1.0,143,0,0
+rsd,grok-4.3,structured_reasoning,143,142,0.993006993006993,140,2,1
+rsd,grok-4.3,structured_reasoning_few_shot,143,143,1.0,143,0,0
+rsd,grok-4.3,zero_shot,143,143,1.0,141,2,0
+rsd,qwen3.8-27b-cerebras,few_shot,143,143,1.0,141,2,0
+rsd,qwen3.8-27b-cerebras,structured_reasoning,143,143,1.0,127,16,0
+rsd,qwen3.8-27b-cerebras,structured_reasoning_few_shot,143,143,1.0,140,3,0
+rsd,qwen3.8-27b-cerebras,zero_shot,143,136,0.951048951048951,109,27,7
